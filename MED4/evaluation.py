@@ -69,6 +69,9 @@ for i in range(len(knn_predictions)):
 print("Predicted y's: " + str(str_knn_predictions))
 # ---------------
 
+print("")
+print("--KNN--")
+
 # Beregner en accuracy score ud fra hvor mange predictions den har fået rigtige.
 print('Accuracy of the knn algorithm is {}'.format(accuracy_score(y_test,knn_predictions)))
 # Cross validation beregner accuracy scoren men ud fra at den tester 5 gange (Prøv at slette .mean() og se dens output).
@@ -89,6 +92,8 @@ plt.ylabel('True label', color='black')
 
 
 # Gør de samme ting som med knn-classifieren så bare med en ny classifier
+print("")
+print("--DT--")
 dt_clf = DecisionTreeClassifier()
 dt_clf.fit(x_train, y_train)
 dt_predictions = dt_clf.predict(x_test)
@@ -105,6 +110,8 @@ plt.ylabel('True label', color='black')
 
 
 # Gør de samme ting som med knn-classifieren så bare med en ny classifier
+print("")
+print("--GNB--")
 nb_clf = GaussianNB()
 nb_clf.fit(x_train, y_train)
 nb_predictions = nb_clf.predict(x_test)

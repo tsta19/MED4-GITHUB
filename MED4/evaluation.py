@@ -19,6 +19,12 @@ def target_type(row):
         return 'Noise'
 
 
+def find_errors(testY,predictions,testX):
+    for i in range(len(testY)):
+        if testY[i] != predictions[i]:
+            print("error with [" + str(testX[i]) + "][" + str(testY[i]) + "]")
+
+
 """Et library der består af et antal arrays, som hver er opdelt på følgende: [x,y]
    Her kan x f.eks. være en pitch-værdi, for et enkelt lydsample.
    Her vil y være den kategori den er blevet klassificeret som. Eks. 0 eller 1 -> 'Voice' eller 'Noice'"""
@@ -90,6 +96,9 @@ matrix.ax_.set_title('K-Nearest Neighbors', color='black')
 plt.xlabel('Predicted label', color='black')
 plt.ylabel('True label', color='black')
 
+print("")
+print("Errors:")
+find_errors(y_test,knn_predictions,x_test)
 
 # Gør de samme ting som med knn-classifieren så bare med en ny classifier
 print("")
@@ -108,6 +117,9 @@ matrix.ax_.set_title('Decision Tree', color='black')
 plt.xlabel('Predicted label', color='black')
 plt.ylabel('True label', color='black')
 
+print("")
+print("Errors:")
+find_errors(y_test,dt_predictions,x_test)
 
 # Gør de samme ting som med knn-classifieren så bare med en ny classifier
 print("")
@@ -126,5 +138,8 @@ matrix.ax_.set_title('Gaussian NB', color='black')
 plt.xlabel('Predicted label', color='black')
 plt.ylabel('True label', color='black')
 
+print("")
+print("Errors:")
+find_errors(y_test,nb_predictions,x_test)
 
-plt.show()
+#plt.show()

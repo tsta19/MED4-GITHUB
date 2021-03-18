@@ -1,0 +1,76 @@
+#N canvas 457 181 1162 718 10;
+#X obj 100 200 inlet~;
+#X obj 100 250 +~;
+#X obj 100 280 outlet~;
+#X obj 155 280 delwrite~ \$0-combfilter 500;
+#X obj 400 100 cnv 15 298 190 empty empty Comb\ Filter\ Controller
+7 12 0 14 #2d2d2d #ff8000 0;
+#X obj 410 150 hsl 175 20 0 2000 0 0 empty empty Delay -2 -10 0 10
+#ff8000 #000000 #ff8000 2175 1;
+#X obj 410 225 hsl 175 20 0 1 0 0 empty empty Filter\ Coefficient -2
+-10 0 10 #ff8000 #000000 #ff8000 0 1;
+#X obj 155 200 delread~ \$0-combfilter;
+#X obj 155 225 *~;
+#X floatatom 185 225 5 0 0 0 - - -, f 5;
+#X obj 595 150 nbx 6 20 -1e+37 1e+37 0 0 empty empty empty 0 -8 0 10
+#fcfcfc #000000 #000000 250 256 0;
+#X obj 595 225 nbx 6 20 -1e+37 1e+37 0 0 empty empty empty 0 -8 0 10
+#fcfcfc #000000 #000000 0 256 0;
+#X obj 410 180 bng 20 250 50 0 empty empty 250 27 7 0 10 #ff8000 #000000
+#ff8000;
+#X obj 460 180 bng 20 250 50 0 empty empty 500 27 7 0 10 #ff8000 #000000
+#ff8000;
+#X obj 510 180 bng 20 250 50 0 empty empty 1000 27 7 0 10 #ff8000 #000000
+#ff8000;
+#X obj 570 180 bng 20 250 50 0 empty empty 2000 27 7 0 10 #ff8000 #000000
+#ff8000;
+#X msg 400 65 250;
+#X msg 430 65 500;
+#X msg 460 65 1000;
+#X msg 495 65 2000;
+#X obj 410 255 bng 20 250 50 0 empty empty 15 27 7 0 10 #ff8000 #000000
+#ff8000;
+#X obj 460 255 bng 20 250 50 0 empty empty 30 27 7 0 10 #ff8000 #000000
+#ff8000;
+#X obj 510 255 bng 20 250 50 0 empty empty 60 27 7 0 10 #ff8000 #000000
+#ff8000;
+#X obj 570 255 bng 20 250 50 0 empty empty 1 27 7 0 10 #ff8000 #000000
+#ff8000;
+#X msg 350 190 0.15;
+#X msg 350 215 0.3;
+#X msg 350 240 0.6;
+#X obj 635 255 bng 20 250 50 0 empty empty Reset 26 7 0 10 #ff0000
+#000000 #ff0000;
+#X msg 355 305 0;
+#X msg 350 265 1;
+#X connect 0 0 1 0;
+#X connect 1 0 2 0;
+#X connect 1 0 3 0;
+#X connect 5 0 10 0;
+#X connect 5 0 7 0;
+#X connect 6 0 9 0;
+#X connect 6 0 11 0;
+#X connect 7 0 8 0;
+#X connect 8 0 1 1;
+#X connect 9 0 8 1;
+#X connect 12 0 16 0;
+#X connect 13 0 17 0;
+#X connect 14 0 18 0;
+#X connect 15 0 19 0;
+#X connect 16 0 5 0;
+#X connect 17 0 5 0;
+#X connect 18 0 5 0;
+#X connect 19 0 5 0;
+#X connect 20 0 24 0;
+#X connect 21 0 25 0;
+#X connect 22 0 26 0;
+#X connect 23 0 29 0;
+#X connect 23 0 16 0;
+#X connect 24 0 6 0;
+#X connect 25 0 6 0;
+#X connect 26 0 6 0;
+#X connect 27 0 28 0;
+#X connect 28 0 5 0;
+#X connect 28 0 6 0;
+#X connect 29 0 6 0;
+#X coords 0 -1 1 1 300 191 1 399 99;

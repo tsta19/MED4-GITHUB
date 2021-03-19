@@ -1,10 +1,11 @@
 import sys
 import numpy as np
-
+from QuickSort import *
 
 class FileSorter():
     np.set_printoptions(threshold=sys.maxsize)
     fileName = "pitch_values.txt"
+    newFileName = "sorted_pitch_values.txt"
     read = "r"
     write = "w"
     pitchValuesArray = []
@@ -42,14 +43,15 @@ class FileSorter():
 
         return numericPitchArray
 
-    def writeTextFile(self):
-        file = open("PitchArray.txt", "w+")
-        file.write(str(fs.convertToArray()))
+    def writeTextFile(self, value):
+        file = open(self.newFileName, "w+")
+        file.write(str(value))
 
 
 if __name__ == '__main__':
+    qs = QuickSort()
     fs = FileSorter()
     fs.removeNormalZeroes()
     fs.removeSpacedZeroes()
-    print(fs.convertToArray())
-    fs.writeTextFile()
+    sortedList = qs.quickSort(fs.convertToArray().tolist())
+    fs.writeTextFile(sortedList)

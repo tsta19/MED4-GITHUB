@@ -13,9 +13,9 @@ class DataManager:
     # Directory Settings
     testDirectory = ""
     savePath = ""
-    processedDirectory = "Sorted_Mic_Sample_Values_Processed"
-    soundDirectory = "Mic_Samples"
-    soundGraphDirectory = "Sorted_Mic_Sample_Graphs"
+    processedDirectory = "Sound_Files/Sorted_Mic_Sample_Values_Processed"
+    soundDirectory = "Sound_Files/Mic_Samples"
+    soundGraphDirectory = "Sound_Files/Sorted_Mic_Sample_Graphs"
 
     # Variables
     executionTime = time.time()

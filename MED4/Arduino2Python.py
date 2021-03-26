@@ -8,16 +8,18 @@ class SensorDataManager:
     dataArray = []
     sampleSize = 0
     counter = 0
+    baud = 0
+    port = 0
+    arduino = 0
 
     def __init__(self, PORT, BAUDRATE, samplesize):
-        print(f"Connecting to port: {PORT}...")
-        self.arduino = serial.Serial(f'{PORT}', BAUDRATE)
-        print(f"Connected to Arduino port:{PORT}")
+        self.port = PORT
+        self.baud = BAUDRATE
         self.sampleSize = samplesize
 
     def plotData(self):
         plt.ion()
-        plt.ylim(int(np.min(self.dataArray)-5), int(np.max(self.dataArray)+5))
+        plt.ylim(int(np.min(self.dataArray) - 5), int(np.max(self.dataArray) + 5))
         plt.grid(True)
         plt.plot(self.dataArray, '-', label="Decibel (dB)")
 
@@ -35,7 +37,9 @@ class SensorDataManager:
         print(f"{self.sampleSize} samples saved to file: {fileName}")
 
     def collectData(self):
-
+        print(f"Connecting to port: {self.port}...")
+        self.arduino = serial.Serial(f'{self.port}', self.baud)
+        print(f"Connected to Arduino port:{self.port}")
         while self.arduino.inWaiting() == 0:
             pass
         print("Collecting sensor data...")
@@ -54,5 +58,3 @@ if __name__ == "__main__":
     sensorCollector.writeToCSV("test", sensorCollector.collectData())
     sensorCollector.plotData()
     sensorCollector.drawPlot()
-
-

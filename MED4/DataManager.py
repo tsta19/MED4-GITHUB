@@ -1,5 +1,7 @@
 import math
 import os
+import sys
+import pitch
 from tqdm import tqdm
 import time
 import numpy as np
@@ -10,6 +12,9 @@ import warnings
 
 
 class DataManager:
+    # Toggles
+    showFullArray = False
+
     # Directory Settings
     testDirectory = ""
     savePath = ""
@@ -25,6 +30,11 @@ class DataManager:
     txtFileType = ".txt"
     soundFileType = ".wav"
     specifySoundFile = "mic_sample_"
+    # p = pitch.find_pitch("Sound_Files/Mic_Samples/mic_sample_1.wav")
+    # print(p)
+
+    if showFullArray:
+        np.set_printoptions(threshold=sys.maxsize)
 
     # Sound Related
     sampleRate = 44100
@@ -84,10 +94,10 @@ class DataManager:
         print("+------------------------------+")
         print(printResultsCode, "operations are Done")
 
-    def soundDataManager(self):
+    def soundDataManager(self, soundDirectory, graphDirectory, fileName):
         soundFileCode = "Function: soundDataManager"
-        for soundFiles in tqdm(os.listdir(self.soundDirectory)):
-            soundFilesSpec = os.path.join(self.soundDirectory, str(self.specifySoundFile) + str(self.soundIteration) + ".wav")
+        for soundFiles in tqdm(os.listdir(soundDirectory)):
+            soundFilesSpec = os.path.join(soundDirectory, str(fileName) + str(self.soundIteration) + ".wav")
             if soundFiles.endswith(".wav"):
                 soundFile = wave.open(soundFilesSpec, "r")
                 da = np.fromstring(soundFile.readframes(self.sampleRate), dtype=np.int16)
@@ -97,25 +107,18 @@ class DataManager:
                 a = plt.subplot(211)
                 r = 2 ** 16 / 2
                 a.set_ylim([-r, r])
-                a.set_xlabel('time [s]   ' + str(self.specifySoundFile) + str(self.soundIteration))
-                a.set_ylabel('sample value [-]')
+                a.set_xlabel('Time in Seconds   ' + str(fileName) + str(self.soundIteration))
+                a.set_ylabel('Sample Value [-]')
                 x = np.arange(22050) / 22050
                 plt.plot(x, left)
                 b = plt.subplot(212)
                 b.set_xscale('log')
-                b.set_xlabel('frequency [Hz]   ' + str(self.specifySoundFile) + str(self.soundIteration))
-                b.set_ylabel('|amplitude|')
+                b.set_xlabel('Frequency [Hz]   ' + str(fileName) + str(self.soundIteration))
+                b.set_ylabel('|Amplitude|')
                 plt.plot(lf)
                 plt.tight_layout()
-                plt.savefig(str(self.soundGraphDirectory) + "/" + str(self.specifySoundFile) + str(self.soundIteration) + '.png')
+                plt.savefig(str(graphDirectory) + "/" + str(fileName) + str(self.soundIteration) + '.png')
                 self.soundIteration += 1
             else:
                 print("ERROR: Wrong filetype" + "\n", "It is supposed to be ", self.soundFileType)
         print(soundFileCode, "operations are Done")
-
-
-if __name__ == '__main__':
-    dm = DataManager()
-    # dm.dataManager()
-    # dm.printTestingResults()
-    dm.soundDataManager()

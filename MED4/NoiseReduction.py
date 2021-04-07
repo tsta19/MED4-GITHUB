@@ -10,7 +10,7 @@ class NoiseReduction:
     fname = 'Wav/sound_file_8.wav'
     outname = 'filtered.wav'
 
-    cutOffFrequency = 200.0
+    cutOffFrequency = 250.0
 
     # from http://stackoverflow.com/questions/13728392/moving-average-or-running-mean
     def running_mean(self, x, windowSize):

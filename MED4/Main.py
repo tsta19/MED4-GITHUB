@@ -1,7 +1,6 @@
 # imports
 import glob
 import os
-from Recorder import *
 from DataManager import *
 from NoiseReduction import *
 from Explorer import *
@@ -14,13 +13,22 @@ if __name__ == '__main__':
     # Directory is an automatic version that goes through files in a directory
     modeSingleFile = False
     modeDirectory = True
+    debug = True
+    record = False
 
     # Iterator(s)
     iteration = 1
 
     # Class instantiations
     exp = Explorer()
-    rec = Recorder()
+
+    if record:
+        from Recorder import *
+        rec = Recorder()
+
+    else:
+        print("Recording is turned: Off")
+
     nRed = NoiseReduction()
     spectra = SpectraAnalysis()
     vr = VoiceRecognizer()
@@ -29,11 +37,14 @@ if __name__ == '__main__':
         number = 1
         soundFile = "{}sound_file_{}.{}".format(exp.getAudioFilePath(), number, "wav")
         singleFileSpecification = os.path.join(str(soundFile))
+
         nRed.noiseFiltering(False, soundFile, singleFileSpecification)
         spectra.spectra("sound_file_1")
         sampleRate, data = wavfile.read(exp.getAudioFilePath() + "sound_file_1" + ".wav")
-        vr.recognize(spectra.spectral_statistics(data, 3000))
-        print("Mean Frequency:", spectra.spectral_statistics(data, 3000))
+        vr.recognize(spectra.meanFrequency(data, 3000))
+
+        if debug:
+            print("Mean Frequency:", spectra.meanFrequency(data, 3000))
 
     if modeDirectory:
         soundFile = "noise"
@@ -44,19 +55,27 @@ if __name__ == '__main__':
             wavFile.close()
 
         for audioFiles in glob.glob(os.path.join(exp.getAudioFilePath() + str(soundFile) + '*.wav')):
-            print("--------------------------")
-            print("For Loop iteration:", iteration)
+            audioFileSpecification = os.path.join(exp.getAudioFilePath(), str(soundFile) + "_" + str(iteration) + "_"
+                                                  + str(outputName) + ".wav")
 
-            audioFileSpecification = os.path.join(exp.getAudioFilePath(), str(soundFile) + "_" + str(iteration) + "_" + str(outputName) + ".wav")
-            print("File:", audioFileSpecification)
+            if debug:
+                print("--------------------------")
+                print("For-Loop iteration:", iteration)
+                print("File:", audioFileSpecification)
+
             nRed.noiseFiltering(True, soundFile, audioFileSpecification, audioFiles)
             spectra.spectra(audioFileSpecification)
             sampleRate, data = wavfile.read(exp.getAudioFilePath() + soundFile + "_" + str(iteration) + "_"
                                             + str(outputName) + ".wav")
-            meanFrequency = spectra.spectral_statistics(data, 5000)
+
+            meanFrequency = spectra.meanFrequency(data, 5000)
             vr.recognize(meanFrequency)
-            print("Mean Frequency:", meanFrequency)
+
+            if debug:
+                print("Mean Frequency:", meanFrequency)
+                print("--------------------------", "\n")
+
             iteration += 1
-            print("--------------------------", "\n")
+            spectra.iterator += 1
 
     # dm.soundDataManager(soundDirectory, graphDirectory, "sound_file_")

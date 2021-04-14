@@ -3,6 +3,7 @@ class Explorer:
     audioFilePath = "Wav/"
     denoisedFilePath = "Wav/Denoised_Files/"
     graphFilePath = "Graphs/"
+    filteredFilePath = "Wav/Filtered/"
 
     def getAudioFilePath(self):
         return self.audioFilePath
@@ -12,3 +13,11 @@ class Explorer:
 
     def getDenoisedFilePath(self):
         return self.denoisedFilePath
+
+    def getFilteredFilePath(self):
+        return self.filteredFilePath
+
+    def wTxt(self, name, value: str, fileMode):
+        txt = open(str(name) + ".txt", str(fileMode))
+        txt.write(str(value))
+        txt.close()

@@ -7,9 +7,6 @@ import contextlib
 
 
 class NoiseReduction:
-    fname = 'Wav/sound_file_8.wav'
-    outname = 'filtered.wav'
-
     cutOffFrequency = 250.0
 
     # from http://stackoverflow.com/questions/13728392/moving-average-or-running-mean

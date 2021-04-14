@@ -1,6 +1,6 @@
 class VoiceRecognizer:
-    thresholdLow = 49.2
-    thresholdHigh = 59.4
+    thresholdLow = 425.75
+    thresholdHigh = 505.55
 
     def recognize(self, valueToDetect: float):
         if self.thresholdLow < valueToDetect < self.thresholdHigh:

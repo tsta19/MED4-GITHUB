@@ -10,23 +10,43 @@ p=pyaudio.PyAudio() # start the PyAudio class
 stream=p.open(format=pyaudio.paInt16,channels=1,rate=RATE,input=True,
               frames_per_buffer=CHUNK) #uses default input device
 
+samplingFreq = RATE
+minDigPitch = 50 * 2 * np.pi / samplingFreq  # radians/sample
+print("minPitch", minDigPitch)
+maxDigPitch = 1000 * 2 * np.pi / samplingFreq  # radians/sample
+print("maxPitch", maxDigPitch)
 
-average=0
+def combFilterPitchEstimation(inputSignal, minDigPitch, maxDigPitch):
+    minPeriod = np.int(np.ceil(2 * np.pi / maxDigPitch))
+    maxPeriod = np.int(np.floor(2 * np.pi / minDigPitch))
+    periodGrid = np.arange(minPeriod, maxPeriod + 1)
+    nPitches = np.size(periodGrid)
+    normAutoCorr = np.zeros(nPitches)
+    signal = inputSignal[maxPeriod:]
+    signalPower = np.sum(signal ** 2)
+    for ii in np.arange(nPitches):
+        iiPeriod = periodGrid[ii]
+        shiftedSignal = inputSignal[maxPeriod - iiPeriod:-iiPeriod]
+        shiftedSignalPower = np.sum(shiftedSignal ** 2)
+        normAutoCorr[ii] = np.max((np.sum(signal * shiftedSignal) / np.sqrt(signalPower * shiftedSignalPower), 0))
+    estPeriodIdx = np.argmax(normAutoCorr)
+    estDigPitch = 2 * np.pi / periodGrid[estPeriodIdx]
+    return estDigPitch, periodGrid, normAutoCorr
+
 # create a numpy array holding a single read of audio data
 for i in range(100): #to it a few times just to see
     data = np.frombuffer(stream.read(CHUNK),dtype=np.int16)
 
-    for j in range(len(data)):
-        average += abs(data[j])
+    guitarSignal = data / 2 ** 11  # normalise
+    estDigPitch, periodGrid, normAutoCorr = combFilterPitchEstimation(guitarSignal, minDigPitch, maxDigPitch)
+    print('The estimated pitch is {0:.2f} Hz.'.format(estDigPitch * samplingFreq / (2 * np.pi)))
 
-    average = average / len(data)
-    print(average)
+
 
 # close the stream gracefully
 stream.stop_stream()
 stream.close()
 p.terminate()
-
 
 """import sounddevice as sd
 from scipy.io.wavfile import write

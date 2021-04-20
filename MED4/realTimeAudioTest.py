@@ -1,20 +1,22 @@
 import pyaudio
 import numpy as np
-np.set_printoptions(suppress=True) # don't use scientific notation
 
-CHUNK = 2048 # number of data points to read at a time
-RATE = 44100 # time resolution of the recording device (Hz)
-TARGET = 2100 # show only this one frequency
+np.set_printoptions(suppress=True)  # don't use scientific notation
 
-p=pyaudio.PyAudio() # start the PyAudio class
-stream=p.open(format=pyaudio.paInt16,channels=1,rate=RATE,input=True,
-              frames_per_buffer=CHUNK) #uses default input device
+CHUNK = 4096  # number of data points to read at a time
+RATE = 44100  # time resolution of the recording device (Hz)
+TARGET = 2100  # show only this one frequency
+
+p = pyaudio.PyAudio()  # start the PyAudio class
+stream = p.open(format=pyaudio.paInt16, channels=1, rate=RATE, input=True,
+                frames_per_buffer=CHUNK)  # uses default input device
 
 samplingFreq = RATE
 minDigPitch = 50 * 2 * np.pi / samplingFreq  # radians/sample
 print("minPitch", minDigPitch)
 maxDigPitch = 1000 * 2 * np.pi / samplingFreq  # radians/sample
 print("maxPitch", maxDigPitch)
+
 
 def combFilterPitchEstimation(inputSignal, minDigPitch, maxDigPitch):
     minPeriod = np.int(np.ceil(2 * np.pi / maxDigPitch))
@@ -33,15 +35,15 @@ def combFilterPitchEstimation(inputSignal, minDigPitch, maxDigPitch):
     estDigPitch = 2 * np.pi / periodGrid[estPeriodIdx]
     return estDigPitch, periodGrid, normAutoCorr
 
+
 # create a numpy array holding a single read of audio data
-for i in range(100): #to it a few times just to see
-    data = np.frombuffer(stream.read(CHUNK),dtype=np.int16)
+for i in range(500):  # to it a few times just to see
+    data = np.frombuffer(stream.read(CHUNK), dtype=np.int16)
 
     guitarSignal = data / 2 ** 11  # normalise
     estDigPitch, periodGrid, normAutoCorr = combFilterPitchEstimation(guitarSignal, minDigPitch, maxDigPitch)
-    print('The estimated pitch is {0:.2f} Hz.'.format(estDigPitch * samplingFreq / (2 * np.pi)))
-
-
+    if 55 < (estDigPitch * samplingFreq / (2 * np.pi)) < 175:
+        print('The estimated pitch is {0:.2f} Hz.'.format(estDigPitch * samplingFreq / (2 * np.pi)))
 
 # close the stream gracefully
 stream.stop_stream()

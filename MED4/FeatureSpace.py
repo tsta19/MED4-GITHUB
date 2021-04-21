@@ -1,8 +1,8 @@
 import numpy as np
 import math
 
-class FeatureSpace:
 
+class FeatureSpace:
     Emotions = {
         "Happy": happyMin and happyMax,
         "Sad": sadMin and sadMax,
@@ -16,6 +16,11 @@ class FeatureSpace:
         "soundVari": soundVariMin and soundVariMax,
         "soundlvl": sondlvlMin and soundlvlMax,
     }
+    hScore, hValue = 0, 0
+    sScore, sValue = 0, 0
+    aScore, aValue = 0, 0
+    fScore, fValue = 0, 0
+    tScore, tValue = 0, 0
 
     pitchMean_happy = 0
     pitchStd_happy = 0
@@ -27,7 +32,6 @@ class FeatureSpace:
     pitchStd_fear = 0
     pitchMean_tender = 0
     pitchStd_tender = 0
-
 
     pitchVariMean_happy = 0
     pitchVariStd_happy = 0
@@ -98,17 +102,20 @@ class FeatureSpace:
     # soundlvlMin_fear = 0
     # soundlvlMax_fear = 0
 
-    #measurementsArray = [pitchlvl, pitchVari, soundVari, soundlvl]
+    # measurementsArray = [pitchlvl, pitchVari, soundVari, soundlvl]
 
     def getDistance(self, featureMeasurement, featureValue):
-        distance = np.sqrt((featureValue - featureMeasurement)**2)
+        distance = np.sqrt((featureValue - featureMeasurement) ** 2)
 
         return distance
 
     def getRelation(self, mean, std, measurementsArrayValue):
-        relation = (mean + self.getDistance(measurementsArrayValue, mean)) / (mean + 2*std)
+        relation = (mean + self.getDistance(measurementsArrayValue, mean)) / (mean + 2 * std)
 
         return relation
+
+    def weirdDivision(self, n, d):
+        return float(n / d) if d else 100
 
     def checkPitch(self, measurementsArray):
         pHappy = self.getRelation(self.pitchMean_happy, self.pitchStd_happy, measurementsArray[0])
@@ -119,12 +126,14 @@ class FeatureSpace:
 
         pitchRelations = [pHappy, pSad, pAngry, pFear, pTender]
         print('---------------------------')
-        print("Pitch Happy%:", pitchRelations[0]*100)
-        print("Pitch Sad%:", pitchRelations[1]*100)
-        print("Pitch Angry%:", pitchRelations[2]*100)
-        print("Pitch Fear%:", pitchRelations[3]*100)
-        print("Pitch Tender%:", pitchRelations[4]*100)
-        return pitchRelations
+        print("Pitch Happy:", pitchRelations[0])
+        print("Pitch Sad:", pitchRelations[1])
+        print("Pitch Angry:", pitchRelations[2])
+        print("Pitch Fear:", pitchRelations[3])
+        print("Pitch Tender:", pitchRelations[4])
+
+        mostProbableMood = [min(pitchRelations), pitchRelations.index(min(pitchRelations))]
+        return mostProbableMood
 
     def checkPitchVariance(self, measurementsArray):
         pvHappy = self.getRelation(self.pitchVariMean_happy, self.pitchVariStd_happy, measurementsArray[1])
@@ -135,12 +144,14 @@ class FeatureSpace:
 
         pitchVarianceRelations = [pvHappy, pvSad, pvAngry, pvFear, pvTender]
         print('---------------------------')
-        print("Pitch Variance Happy%:", pitchVarianceRelations[0] * 100)
-        print("Pitch Variance Sad%:", pitchVarianceRelations[1] * 100)
-        print("Pitch Variance Angry%:", pitchVarianceRelations[2] * 100)
-        print("Pitch Variance Fear%:", pitchVarianceRelations[3] * 100)
-        print("Pitch Variance Tender%:", pitchVarianceRelations[4] * 100)
-        return pitchVarianceRelations
+        print("Pitch Variance Happy:", pitchVarianceRelations[0])
+        print("Pitch Variance Sad:", pitchVarianceRelations[1])
+        print("Pitch Variance Angry:", pitchVarianceRelations[2])
+        print("Pitch Variance Fear:", pitchVarianceRelations[3])
+        print("Pitch Variance Tender:", pitchVarianceRelations[4])
+
+        mostProbableMood = [min(pitchVarianceRelations), pitchVarianceRelations.index(min(pitchVarianceRelations))]
+        return mostProbableMood
 
     def checkSoundVariance(self, measurementsArray):
         svHappy = self.getRelation(self.soundVariMean_happy, self.soundVariStd_happy, measurementsArray[2])
@@ -151,18 +162,114 @@ class FeatureSpace:
 
         soundVarianceRelation = [svHappy, svSad, svAngry, svFear, svTender]
         print('---------------------------')
-        print("Sound Variance Happy%:", soundVarianceRelations[0] * 100)
-        print("Sound Variance Sad%:", soundVarianceRelations[1] * 100)
-        print("Sound Variance Angry%:", soundVarianceRelations[2] * 100)
-        print("Sound Variance Fear%:", soundVarianceRelations[3] * 100)
-        print("Sound Variance Tender%:", soundVarianceRelations[4] * 100)
-        return soundVarianceRelation
+        print("Sound Variance Happy:", soundVarianceRelations[0])
+        print("Sound Variance Sad:", soundVarianceRelations[1])
+        print("Sound Variance Angry:", soundVarianceRelations[2])
+        print("Sound Variance Fear:", soundVarianceRelations[3])
+        print("Sound Variance Tender:", soundVarianceRelations[4])
 
+        mostProbableMood = [min(soundVarianceRelation), soundVarianceRelation.index(min(soundVarianceRelation))]
+        return mostProbableMood
 
     def checkSound(self, measurementsArray):
+        sHappy = self.getRelation(self.soundlvlMean_happy, self.soundlvlStd_happy, measurementsArray[3])
+        sSad = self.getRelation(self.soundlvlMean_sad, self.soundlvlStd_sad, measurementsArray[3])
+        sAngry = self.getRelation(self.soundlvlMean_angry, self.soundlvlStd_angry, measurementsArray[3])
+        sFear = self.getRelation(self.soundlvlMean_fear, self.soundlvlStd_fear, measurementsArray[3])
+        sTender = self.getRelation(self.soundlvlMean_tender, self.soundlvlStd_tender, measurementsArray[3])
 
-        pass
+        soundLevelRelation = [sHappy, sSad, sAngry, sFear, sTender]
+        print('---------------------------')
+        print("Sound Level Happy:", soundVarianceRelations[0])
+        print("Sound Level Sad:", soundVarianceRelations[1])
+        print("Sound Level Angry:", soundVarianceRelations[2])
+        print("Sound Level Fear:", soundVarianceRelations[3])
+        print("Sound Level Tender:", soundVarianceRelations[4])
 
-    def checkEmotion(self):
+        mostProbableMood = [min(soundLevelRelation), soundLevelRelation.index(min(soundLevelRelation))]
+        return mostProbableMood
 
-        pass
+    def checkEmotion(self, measurementsArray):
+        pitch = self.checkPitch(measurementsArray)
+        pitchVariance = self.checkPitchVariance(measurementsArray)
+        soundVariance = self.checkSoundVariance(measurementsArray)
+        soundlvl = self.checkSound(measurementsArray)
+
+        if pitch[1] == 0:
+            self.hValue + pitch[0], self.hScore + 1
+
+        if pitch[1] == 1:
+            self.sValue + pitch[0], self.sScore + 1
+
+        if pitch[1] == 2:
+            self.aValue + pitch[0], self.aScore + 1
+
+        if pitch[1] == 3:
+            self.fValue + pitch[0], self.fScore + 1
+
+        if pitch[1] == 4:
+            self.tValue + pitch[0], self.tScore + 1
+
+        if pitchVariance[1] == 0:
+            self.hValue + pitchVariance[0], self.hScore + 1
+
+        if pitchVariance[1] == 1:
+            self.sValue + pitchVariance[0], self.sScore + 1
+
+        if pitchVariance[1] == 2:
+            self.aValue + pitchVariance[0], self.aScore + 1
+
+        if pitchVariance[1] == 3:
+            self.fValue + pitchVariance[0], self.fScore + 1
+
+        if pitchVariance[1] == 4:
+            self.tValue + pitchVariance[0], self.tScore + 1
+
+        if soundVariance[1] == 0:
+            self.hValue + soundVariance[0], self.hScore + 1
+
+        if soundVariance[1] == 1:
+            self.sValue + soundVariance[0], self.sScore + 1
+
+        if soundVariance[1] == 2:
+            self.aValue + soundVariance[0], self.aScore + 1
+
+        if soundVariance[1] == 3:
+            self.fValue + soundVariance[0], self.fScore + 1
+
+        if soundVariance[1] == 4:
+            self.tValue + soundVariance[0], self.tScore + 1
+
+        if soundlvl[1] == 0:
+            self.hValue + soundlvl[0], self.hScore + 1
+
+        if soundlvl[1] == 1:
+            self.sValue + soundlvl[0], self.sScore + 1
+
+        if soundlvl[1] == 2:
+            self.aValue + soundlvl[0], self.aScore + 1
+
+        if soundlvl[1] == 3:
+            self.fValue + soundlvl[0], self.fScore + 1
+
+        if soundlvl[1] == 4:
+            self.tValue + soundlvl[0], self.tScore + 1
+
+        theEmotionArray = [self.weirdDivision(self.hValue, self.hScore), self.weirdDivision(self.sValue, self.sScore),
+                           self.weirdDivision(self.aValue, self.aScore), self.weirdDivision(self.fValue, self.fScore),
+                           self.weirdDivision(self.tValue, self.tScore)]
+
+        if theEmotionArray.index(min(theEmotionArray)) == 0:
+            print("Happy")
+
+        if theEmotionArray.index(min(theEmotionArray)) == 1:
+            print("Sad")
+
+        if theEmotionArray.index(min(theEmotionArray)) == 2:
+            print("Angry")
+
+        if theEmotionArray.index(min(theEmotionArray)) == 3:
+            print("Fear")
+
+        if theEmotionArray.index(min(theEmotionArray)) == 4:
+            print("Tender")

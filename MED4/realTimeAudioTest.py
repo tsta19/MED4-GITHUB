@@ -1,9 +1,12 @@
 import pyaudio
 import numpy as np
+import sys
+import audioop
+import math
 
-np.set_printoptions(suppress=True)  # don't use scientific notation
+np.set_printoptions(threshold=sys.maxsize)
 
-CHUNK = 4096  # number of data points to read at a time
+CHUNK = 1024*2  # number of data points to read at a time
 RATE = 44100  # time resolution of the recording device (Hz)
 TARGET = 2100  # show only this one frequency
 
@@ -36,21 +39,63 @@ def combFilterPitchEstimation(inputSignal, minDigPitch, maxDigPitch):
     return estDigPitch, periodGrid, normAutoCorr
 
 
+# 45.575087508483136 - 48.21612926584542
+# 49.87701409139849 - 52.8979408854918
+happyArr = []
+resultArr = []
+voiceCounter = 0
+voiceArr = np.array([])
+
 # create a numpy array holding a single read of audio data
-for i in range(500):  # to it a few times just to see
+for i in range(1000):  # to it a few times just to see
     data = np.frombuffer(stream.read(CHUNK), dtype=np.int16)
+
+    rms = audioop.rms(data, 2)  # Root Mean Square to get volume
+    decibel = 20 * math.log10(rms)
+
+    """if 45 > decibel >= 40:
+        print("Low Sound")
+    elif 49 > decibel >= 45:
+        print("MediumHigh Sound")
+    elif decibel >= 49:
+        print("High Sound")"""
+
+    #SoundLevel = np.mean(data)
+    #print('Sound Level: ' + str(SoundLevel) + " dB")
 
     guitarSignal = data / 2 ** 11  # normalise
     estDigPitch, periodGrid, normAutoCorr = combFilterPitchEstimation(guitarSignal, minDigPitch, maxDigPitch)
     if 55 < (estDigPitch * samplingFreq / (2 * np.pi)) < 175:
-        print('The estimated pitch is {0:.2f} Hz.'.format(estDigPitch * samplingFreq / (2 * np.pi)))
+        #print('The estimated pitch is {0:.2f} Hz.'.format(estDigPitch * samplingFreq / (2 * np.pi)))
+        voiceCounter += 1
+        voiceArr = np.append(voiceArr, (estDigPitch * samplingFreq / (2 * np.pi)))
+    else:
+        #print("ikke lyd")
+        if voiceCounter > 2:
+            print(np.amax(voiceArr))
+            print(np.amin(voiceArr))
+        voiceArr = np.array([])
+        voiceCounter = 0
+
 
 # close the stream gracefully
 stream.stop_stream()
 stream.close()
 p.terminate()
 
-"""import sounddevice as sd
+
+"""print(resultArr)
+high = 100
+low = 0
+for x in range(len(resultArr)):
+    if resultArr[x] > low:
+        low = resultArr[x]
+    if resultArr[x] < high:
+        high = resultArr[x]
+print("High: " + str(high))
+print("Low: " + str(low))
+
+import sounddevice as sd
 from scipy.io.wavfile import write
 import numpy as np
 import matplotlib.pyplot as plt

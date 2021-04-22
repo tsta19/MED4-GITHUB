@@ -3,6 +3,7 @@ import numpy as np
 import sys
 import audioop
 import math
+from scipy.io import  wavfile
 
 np.set_printoptions(threshold=sys.maxsize)
 
@@ -41,14 +42,32 @@ def combFilterPitchEstimation(inputSignal, minDigPitch, maxDigPitch):
 
 # 45.575087508483136 - 48.21612926584542
 # 49.87701409139849 - 52.8979408854918
-happyArr = []
-resultArr = []
+
 voiceCounter = 0
-voiceArr = np.array([])
+pitchArr = np.array([])
+decibelArr = np.array([])
+noiseCounter = 0
+
+samplerate, data = wavfile.read('sur1.wav')
+newArr = []
+chunk = 1024
+
+print(len(data))
+print(int(len(data)/chunk))
+
+for x in range(int(len(data)/chunk)):
+    if ((x+1)*chunk + chunk) < len(data):
+        #(((x+1)*chunk + chunk))
+        newArr.append(data[x*chunk:(x+1)*chunk-1])
+    else:
+        newArr.append(data[x*chunk:len(data)-1])
+
+print(len(newArr))
 
 # create a numpy array holding a single read of audio data
-for i in range(1000):  # to it a few times just to see
-    data = np.frombuffer(stream.read(CHUNK), dtype=np.int16)
+for i in range(len(newArr)):  # to it a few times just to see
+    #data = np.frombuffer(stream.read(CHUNK), dtype=np.int16)
+    data = newArr[i]
 
     rms = audioop.rms(data, 2)  # Root Mean Square to get volume
     decibel = 20 * math.log10(rms)
@@ -68,14 +87,24 @@ for i in range(1000):  # to it a few times just to see
     if 55 < (estDigPitch * samplingFreq / (2 * np.pi)) < 175:
         #print('The estimated pitch is {0:.2f} Hz.'.format(estDigPitch * samplingFreq / (2 * np.pi)))
         voiceCounter += 1
-        voiceArr = np.append(voiceArr, (estDigPitch * samplingFreq / (2 * np.pi)))
+        pitchArr = np.append(pitchArr, (estDigPitch * samplingFreq / (2 * np.pi)))
+        decibelArr = np.append(decibelArr, decibel)
+        noiseCounter = 0
     else:
+        noiseCounter += 1
+        if noiseCounter > 3:
         #print("ikke lyd")
-        if voiceCounter > 2:
-            print(np.amax(voiceArr))
-            print(np.amin(voiceArr))
-        voiceArr = np.array([])
-        voiceCounter = 0
+            if voiceCounter > 3:
+                print()
+                print("Pitch: " + str(np.mean(pitchArr)))
+                print("Decibel: " + str(np.mean(decibelArr)))
+                print("Pitch variance: " + str(np.amax(pitchArr) - np.amin(pitchArr)))
+                print("Decibel variance: " + str(np.amax(decibelArr) - np.amin(decibelArr)))
+
+            pitchArr = np.array([])
+            decibelArr = np.array([])
+            voiceCounter = 0
+            noiseCounter = 0
 
 
 # close the stream gracefully

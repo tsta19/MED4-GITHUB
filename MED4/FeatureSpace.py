@@ -3,19 +3,7 @@ import math
 
 
 class FeatureSpace:
-    Emotions = {
-        "Happy": happyMin and happyMax,
-        "Sad": sadMin and sadMax,
-        "Angry": angryMin and angryMax,
-        "Fear": fearMin and fearMax
-    }
-
-    Features = {
-        "pitchlvl": pitchMin and pitchMax,
-        "pitchVari": pitchVariMin and pitchVariMax,
-        "soundVari": soundVariMin and soundVariMax,
-        "soundlvl": sondlvlMin and soundlvlMax,
-    }
+    
     hScore, hValue = 0, 0
     sScore, sValue = 0, 0
     aScore, aValue = 0, 0
@@ -162,11 +150,11 @@ class FeatureSpace:
 
         soundVarianceRelation = [svHappy, svSad, svAngry, svFear, svTender]
         print('---------------------------')
-        print("Sound Variance Happy:", soundVarianceRelations[0])
-        print("Sound Variance Sad:", soundVarianceRelations[1])
-        print("Sound Variance Angry:", soundVarianceRelations[2])
-        print("Sound Variance Fear:", soundVarianceRelations[3])
-        print("Sound Variance Tender:", soundVarianceRelations[4])
+        print("Sound Variance Happy:", soundVarianceRelation[0])
+        print("Sound Variance Sad:", soundVarianceRelation[1])
+        print("Sound Variance Angry:", soundVarianceRelation[2])
+        print("Sound Variance Fear:", soundVarianceRelation[3])
+        print("Sound Variance Tender:", soundVarianceRelation[4])
 
         mostProbableMood = [min(soundVarianceRelation), soundVarianceRelation.index(min(soundVarianceRelation))]
         return mostProbableMood
@@ -180,11 +168,11 @@ class FeatureSpace:
 
         soundLevelRelation = [sHappy, sSad, sAngry, sFear, sTender]
         print('---------------------------')
-        print("Sound Level Happy:", soundVarianceRelations[0])
-        print("Sound Level Sad:", soundVarianceRelations[1])
-        print("Sound Level Angry:", soundVarianceRelations[2])
-        print("Sound Level Fear:", soundVarianceRelations[3])
-        print("Sound Level Tender:", soundVarianceRelations[4])
+        print("Sound Level Happy:", soundLevelRelation[0])
+        print("Sound Level Sad:", soundLevelRelation[1])
+        print("Sound Level Angry:", soundLevelRelation[2])
+        print("Sound Level Fear:", soundLevelRelation[3])
+        print("Sound Level Tender:", soundLevelRelation[4])
 
         mostProbableMood = [min(soundLevelRelation), soundLevelRelation.index(min(soundLevelRelation))]
         return mostProbableMood

@@ -11,7 +11,7 @@ from scipy.io.wavfile import write
 
 # np.set_printoptions(threshold=sys.maxsize)
 
-wav_fname = "testest.wav"
+wav_fname = "detteerentest.wav"
 data, samplerate = lbs.load(wav_fname)
 
 print(f'Samplerate = {samplerate}')
@@ -27,12 +27,14 @@ fhat = np.fft.fft(f, n)  ### Fourier transformed signal
 PSD = fhat * np.conj(fhat) / n  ## Computing power spectrum of the signal
 freq = (1 / (dt * n) * np.arange(n))  ## Making freqeuncies for x-axis
 L = np.arange(1, np.floor(n / 2), dtype="int")  ## Only plot the first half of freqs, this seperates the second half
-indices = PSD > max(PSD)*0.7  # Find all freqs with large power
+
+indices = PSD > max(PSD) * 0.8  # Find all freqs with large power
 
 PSDclean = PSD * indices  # Zero out all others
 fhat = indices * fhat  # Zero out small Fourier coeffs. in Y
 ffilt = np.fft.ifft(fhat)
 absFfilt = ffilt.real
+
 
 def getFreqDistribution(data):
     freq01 = []
@@ -85,6 +87,7 @@ def getFreqDistribution(data):
         if 1100 < data[j] * 10000 < 1200:
             freq1112.append(data[j])
     print("--------------------------------------------------")
+    print("Total amount of samples:", len(data))
     print("Samples in frequency range 0-100:", len(freq01))
     print("Samples in frequency range 100-200:", len(freq12))
     print("Samples in frequency range 200-300:", len(freq23))
@@ -111,7 +114,7 @@ if __name__ == "__main__":
     plt.legend()
 
     plt.sca(axis[1])
-    plt.plot(time, absFfilt, color="royalblue", label="Filtered")
+    plt.plot(time, ffilt, color="royalblue", label="Filtered")
     plt.xlim(time[0], time[-1])
     plt.ylabel("Amplitude [?]")
     plt.xlabel("Seconds [s]")
@@ -127,6 +130,14 @@ if __name__ == "__main__":
 
     # plt.sca(axis[0])
     plt.plot(freq[L], PSD[L], color="r", LineWidth=2, label="Noisy")
+    # plt.plot(freq[L], PSDclean[L], color="c", LineWidth=2, label="Filtered")
+    plt.xlim(freq[L[0]], 3000)
+    plt.ylabel("Power")
+    plt.xlabel("Frequency [Hz]")
+    plt.legend()
+    plt.show()
+
+    # plt.plot(freq[L], PSD[L], color="r", LineWidth=2, label="Noisy")
     plt.plot(freq[L], PSDclean[L], color="c", LineWidth=2, label="Filtered")
     plt.xlim(freq[L[0]], 1000)
     plt.ylabel("Power")
@@ -137,10 +148,9 @@ if __name__ == "__main__":
     write("yyyyxu.wav", 22050, absFfilt)
     print("--------------------------------------------------")
     print("Mean frequency:", np.mean(abs(absFfilt)) * 10000)
-    print("Median frequency:", np.median(abs(absFfilt))*10000)
+    print("Median frequency:", np.median(abs(absFfilt)) * 10000)
     print("Maximum frequency:", np.max(abs(absFfilt)) * 10000)
     print("Minimum frequency:", np.min(abs(absFfilt)) * 10000)
-
 
     for i in range(len(freq[L])):
         if PSDclean[i] == max(PSDclean[L]):
@@ -148,3 +158,4 @@ if __name__ == "__main__":
             print("Most powerful frequency in the power spectrum:", freq[i])
             break
 
+    getFreqDistribution(absFfilt)

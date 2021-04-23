@@ -54,7 +54,7 @@ class FeatureExtraction:
 
         while True:
             data = np.frombuffer(stream.read(self.CHUNK), dtype=np.int16)
-            decibel, pi = self.get_features(data)
+            decibel, pi = self.get_features_from_segment(data)
 
             if 55 < pi < 175:
                 #print('The estimated pitch is {0:.2f} Hz.'.format(pi))
@@ -68,27 +68,29 @@ class FeatureExtraction:
                     #print("ikke lyd")
                     if voiceCounter > 3:
 
-                        pitch = np.mean(pitchArr)
-                        dB = np.mean(decibelArr)
-                        pitchVar = np.amax(pitchArr) - np.amin(pitchArr)
-                        dBVar = np.amax(decibelArr) - np.amin(decibelArr)
+                        pitch, dB, pitchVar, dBVar = self.get_features_from_arrays(pitchArr, decibelArr)
                         self.fe.checkEmotion([pitch,pitchVar,dBVar,dB])
                         print(pitch, dB, pitchVar, dBVar)
-
 
                     pitchArr = np.array([])
                     decibelArr = np.array([])
                     voiceCounter = 0
                     noiseCounter = 0
 
-    def get_features(self, data):
+    def get_features_from_arrays(self, arrP, arrSL):
+        pitch = np.mean(arrP)
+        dB = np.mean(arrSL)
+        pitchVar = np.std(arrP)
+        dBVar = np.std(arrSL)
+        return pitch, dB, pitchVar, dBVar
+
+    def get_features_from_segment(self, data):
         rms = audioop.rms(data, 2)  # Root Mean Square to get volume
         decibel = 20 * math.log10(rms)
 
         guitarSignal = data / 2 ** 11  # normalise
         estDigPitch, periodGrid, normAutoCorr = self.combFilterPitchEstimation(guitarSignal, self.minDigPitch,
                                                                                self.maxDigPitch)
-
         pitch = (estDigPitch * self.samplingFreq / (2 * np.pi))
         return decibel, pitch
 
@@ -117,7 +119,7 @@ class FeatureExtraction:
 
         # create a numpy array holding a single read of audio data
         for i in range(len(newArr)):  # to it a few times just to see
-            decibel, p = self.get_features(newArr[i])
+            decibel, p = self.get_features_from_segment(newArr[i])
 
             if 55 < p < 175:
                 voiceCounter += 1
@@ -128,10 +130,12 @@ class FeatureExtraction:
                 noiseCounter += 1
                 if noiseCounter > 3:
                     if voiceCounter > 3:
-                        pitch.append(np.mean(pitchArr))
-                        dB.append(np.mean(decibelArr))
-                        pitchVar.append(np.amax(pitchArr) - np.amin(pitchArr))
-                        dBVar.append(np.amax(decibelArr) - np.amin(decibelArr))
+                        p, s, pVar, sVar = self.get_features_from_arrays(pitchArr, decibelArr)
+
+                        pitch.append(p)
+                        dB.append(s)
+                        pitchVar.append(pVar)
+                        dBVar.append(sVar)
 
                     pitchArr = np.array([])
                     decibelArr = np.array([])
@@ -141,4 +145,3 @@ class FeatureExtraction:
 
 f = FeatureExtraction()
 f.get_features_live()
-

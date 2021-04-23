@@ -3,7 +3,7 @@ import math
 
 
 class FeatureSpace:
-    
+
     hScore, hValue = 0, 0
     sScore, sValue = 0, 0
     aScore, aValue = 0, 0
@@ -67,7 +67,7 @@ class FeatureSpace:
         return relation
 
     def weirdDivision(self, n, d):
-        return float(n / d) if d else 100
+        return n / d if d > 0 else 100
 
     def checkPitch(self, measurementsArray):
         pHappy = self.getRelation(self.pitchMean_happy, self.pitchStd_happy, measurementsArray[0])
@@ -146,71 +146,107 @@ class FeatureSpace:
         pitchVariance = self.checkPitchVariance(measurementsArray)
         soundVariance = self.checkSoundVariance(measurementsArray)
         soundlvl = self.checkSound(measurementsArray)
-
+        print('---------------------------')
+        print("CheckPitch:", pitch)
+        print("CheckPitchVariance:", pitchVariance)
+        print("CheckSoundVariance:", soundVariance)
+        print("CheckSound:", soundlvl)
         if pitch[1] == 0:
-            self.hValue + pitch[0], self.hScore + 1
+            self.hValue += pitch[0]
+            self.hScore += 1
+            print("hscore+:", self.hScore)
 
         elif pitch[1] == 1:
-            self.sValue + pitch[0], self.sScore + 1
+            self.sValue += pitch[0]
+            self.sScore += 1
+            print("sscore+:", self.sScore)
 
         elif pitch[1] == 2:
-            self.aValue + pitch[0], self.aScore + 1
+            self.aValue += pitch[0]
+            self.aScore += 1
+            print("ascore+:", self.aScore)
 
         elif pitch[1] == 3:
-            self.fValue + pitch[0], self.fScore + 1
+            self.fValue += pitch[0]
+            self.fScore += 1
+            print("fscore+:", self.fScore)
 
         elif pitch[1] == 4:
-            self.tValue + pitch[0], self.tScore + 1
+            self.tValue += pitch[0]
+            self.tScore += 1
+            print("tscore+:", self.tScore)
 
         if pitchVariance[1] == 0:
-            self.hValue + pitchVariance[0], self.hScore + 1
+            self.hValue += pitchVariance[0]
+            self.hScore += 1
 
         elif pitchVariance[1] == 1:
-            self.sValue + pitchVariance[0], self.sScore + 1
+            self.sValue += pitchVariance[0]
+            self.sScore += 1
 
         elif pitchVariance[1] == 2:
-            self.aValue + pitchVariance[0], self.aScore + 1
+            self.aValue += pitchVariance[0]
+            self.aScore += 1
 
         elif pitchVariance[1] == 3:
-            self.fValue + pitchVariance[0], self.fScore + 1
+            self.fValue += pitchVariance[0]
+            self.fScore += 1
 
         elif pitchVariance[1] == 4:
-            self.tValue + pitchVariance[0], self.tScore + 1
+            self.tValue += pitchVariance[0]
+            self.tScore += 1
 
         if soundVariance[1] == 0:
-            self.hValue + soundVariance[0], self.hScore + 1
+            self.hValue += soundVariance[0]
+            self.hScore += 1
 
         elif soundVariance[1] == 1:
-            self.sValue + soundVariance[0], self.sScore + 1
+            self.sValue += soundVariance[0]
+            self.sScore += 1
 
         elif soundVariance[1] == 2:
-            self.aValue + soundVariance[0], self.aScore + 1
+            self.aValue += soundVariance[0]
+            self.aScore += 1
 
         elif soundVariance[1] == 3:
-            self.fValue + soundVariance[0], self.fScore + 1
+            self.fValue += soundVariance[0]
+            self.fScore += 1
 
         elif soundVariance[1] == 4:
-            self.tValue + soundVariance[0], self.tScore + 1
+            self.tValue += soundVariance[0]
+            self.tScore += 1
 
         if soundlvl[1] == 0:
-            self.hValue + soundlvl[0], self.hScore + 1
+            self.hValue += soundlvl[0]
+            self.hScore += 1
 
         elif soundlvl[1] == 1:
-            self.sValue + soundlvl[0], self.sScore + 1
+            self.sValue += soundlvl[0]
+            self.sScore += 1
 
         elif soundlvl[1] == 2:
-            self.aValue + soundlvl[0], self.aScore + 1
+            self.aValue += soundlvl[0]
+            self.aScore += 1
 
         elif soundlvl[1] == 3:
-            self.fValue + soundlvl[0], self.fScore + 1
+            self.fValue += soundlvl[0]
+            self.fScore += 1
 
         elif soundlvl[1] == 4:
-            self.tValue + soundlvl[0], self.tScore + 1
+            self.tValue += soundlvl[0]
+            self.tScore += 1
 
         theEmotionArray = [self.weirdDivision(self.hValue, self.hScore), self.weirdDivision(self.sValue, self.sScore),
                            self.weirdDivision(self.aValue, self.aScore), self.weirdDivision(self.fValue, self.fScore),
                            self.weirdDivision(self.tValue, self.tScore)]
 
+        print('---------------------------')
+        print("Emotion value Happy:", theEmotionArray[0])
+        print("Emotion value Sad:", theEmotionArray[1])
+        print("Emotion value Angry:", theEmotionArray[2])
+        print("Emotion value Fear:", theEmotionArray[3])
+        print("Emotion value Tender:", theEmotionArray[4])
+        print('---------------------------')
         if theEmotionArray.index(min(theEmotionArray)) == 0:
             print("Happy")
 
@@ -225,3 +261,9 @@ class FeatureSpace:
 
         if theEmotionArray.index(min(theEmotionArray)) == 4:
             print("Tender")
+
+        self.hScore, self.hValue = 0, 0
+        self.sScore, self.sValue = 0, 0
+        self.aScore, self.aValue = 0, 0
+        self.fScore, self.fValue = 0, 0
+        self.tScore, self.tValue = 0, 0

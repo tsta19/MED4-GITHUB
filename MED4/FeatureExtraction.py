@@ -75,6 +75,7 @@ class FeatureExtraction:
                         self.fe.checkEmotion([pitch,pitchVar,dBVar,dB])
                         print(pitch, dB, pitchVar, dBVar)
 
+
                     pitchArr = np.array([])
                     decibelArr = np.array([])
                     voiceCounter = 0

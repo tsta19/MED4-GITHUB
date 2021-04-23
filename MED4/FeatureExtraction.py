@@ -39,7 +39,6 @@ class FeatureExtraction:
         estDigPitch = 2 * np.pi / periodGrid[estPeriodIdx]
         return estDigPitch, periodGrid, normAutoCorr
 
-
     def get_features_live(self):
         voiceCounter = 0
         pitchArr = np.array([])
@@ -76,7 +75,6 @@ class FeatureExtraction:
                     voiceCounter = 0
                     noiseCounter = 0
 
-
     def get_features(self, data):
         rms = audioop.rms(data, 2)  # Root Mean Square to get volume
         decibel = 20 * math.log10(rms)
@@ -87,7 +85,6 @@ class FeatureExtraction:
 
         pitch = (estDigPitch * self.samplingFreq / (2 * np.pi))
         return decibel, pitch
-
 
     def get_features_from_clip(self, soundDirectory, fileName):
         print("Starting getting features from " + fileName)
@@ -134,4 +131,4 @@ class FeatureExtraction:
                     decibelArr = np.array([])
                     voiceCounter = 0
                     noiseCounter = 0
-        return pitch, dB, pitchVar, dBVar
+        return [pitch, dB, pitchVar, dBVar]

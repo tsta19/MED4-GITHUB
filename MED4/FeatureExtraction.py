@@ -70,7 +70,7 @@ class FeatureExtraction:
 
                         pitch, dB, pitchVar, dBVar = self.get_features_from_arrays(pitchArr, decibelArr)
                         self.fe.checkEmotion([pitch,pitchVar,dBVar,dB])
-                        print(pitch, dB, pitchVar, dBVar)
+                        print("Feature values (P, dB, PV, dBV):", pitch, dB, pitchVar, dBVar)
 
                     pitchArr = np.array([])
                     decibelArr = np.array([])

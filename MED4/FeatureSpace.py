@@ -3,12 +3,13 @@ import math
 
 
 class FeatureSpace:
-
     hScore, hValue = 0, 0
     sScore, sValue = 0, 0
     aScore, aValue = 0, 0
     fScore, fValue = 0, 0
     tScore, tValue = 0, 0
+
+    theEmotionScores = [hScore, sScore, aScore, fScore, tScore]
 
     pitchMean_happy = 107.36030064326853
     pitchStd_happy = 9.7060824240088
@@ -66,7 +67,7 @@ class FeatureSpace:
 
         return relation
 
-    def weirdDivision(self, n, d):
+    def zeroDivision(self, n, d):
         return n / d if d > 0 else 100
 
     def checkPitch(self, measurementsArray):
@@ -155,91 +156,110 @@ class FeatureSpace:
         if pitch[1] == 0:
             self.hValue += pitch[0]
             self.hScore += 1
+            print("hScore awarded from pitch level")
 
         elif pitch[1] == 1:
             self.sValue += pitch[0]
             self.sScore += 1
+            print("sScore awarded from pitch level")
 
         elif pitch[1] == 2:
             self.aValue += pitch[0]
             self.aScore += 1
+            print("aScore awarded from pitch level")
 
         elif pitch[1] == 3:
             self.fValue += pitch[0]
             self.fScore += 1
+            print("fScore awarded from pitch level")
 
         elif pitch[1] == 4:
             self.tValue += pitch[0]
             self.tScore += 1
+            print("tScore awarded from pitch level")
 
         if pitchVariance[1] == 0:
             self.hValue += pitchVariance[0]
             self.hScore += 1
+            print("hScore awarded from pitch variance")
 
         elif pitchVariance[1] == 1:
             self.sValue += pitchVariance[0]
             self.sScore += 1
+            print("sScore awarded from pitch variance")
 
         elif pitchVariance[1] == 2:
             self.aValue += pitchVariance[0]
             self.aScore += 1
+            print("aScore awarded from pitch variance")
 
         elif pitchVariance[1] == 3:
             self.fValue += pitchVariance[0]
             self.fScore += 1
+            print("fScore awarded from pitch variance")
 
         elif pitchVariance[1] == 4:
             self.tValue += pitchVariance[0]
             self.tScore += 1
+            print("tScore awarded from pitch variance")
 
         if soundVariance[1] == 0:
             self.hValue += soundVariance[0]
             self.hScore += 1
+            print("hScore awarded from sound variance")
 
         elif soundVariance[1] == 1:
             self.sValue += soundVariance[0]
             self.sScore += 1
+            print("sScore awarded from sound variance")
 
         elif soundVariance[1] == 2:
             self.aValue += soundVariance[0]
             self.aScore += 1
+            print("aScore awarded from sound variance")
 
         elif soundVariance[1] == 3:
             self.fValue += soundVariance[0]
             self.fScore += 1
+            print("fScore awarded from sound variance")
 
         elif soundVariance[1] == 4:
             self.tValue += soundVariance[0]
             self.tScore += 1
+            print("tScore awarded from sound variance")
 
         if soundlvl[1] == 0:
             self.hValue += soundlvl[0]
             self.hScore += 1
-            print("hscore+:", self.hScore)
+            print("hScore awarded from sound level")
+
 
         elif soundlvl[1] == 1:
             self.sValue += soundlvl[0]
             self.sScore += 1
-            print("sscore+:", self.sScore)
+            print("sScore awarded from sound level")
+
 
         elif soundlvl[1] == 2:
             self.aValue += soundlvl[0]
             self.aScore += 1
-            print("ascore+:", self.aScore)
+            print("aScore awarded from sound level")
+
 
         elif soundlvl[1] == 3:
             self.fValue += soundlvl[0]
             self.fScore += 1
-            print("fscore+:", self.fScore)
+            print("fScore awarded from sound level")
+
 
         elif soundlvl[1] == 4:
             self.tValue += soundlvl[0]
             self.tScore += 1
-            print("tscore+:", self.tScore)
+            print("tScore awarded from sound level")
 
-        theEmotionArray = [self.weirdDivision(self.hValue, self.hScore), self.weirdDivision(self.sValue, self.sScore),
-                           self.weirdDivision(self.aValue, self.aScore), self.weirdDivision(self.fValue, self.fScore),
-                           self.weirdDivision(self.tValue, self.tScore)]
+        theEmotionArray = [self.zeroDivision(self.hValue, self.hScore), self.zeroDivision(self.sValue, self.sScore),
+                           self.zeroDivision(self.aValue, self.aScore), self.zeroDivision(self.fValue, self.fScore),
+                           self.zeroDivision(self.tValue, self.tScore)]
 
         if self.hScore > 1:
             theEmotionArray[0] = theEmotionArray[0] * 0.70
@@ -275,7 +295,12 @@ class FeatureSpace:
                 theEmotionArray[4] = theEmotionArray[4] * 0.70
                 if self.tScore > 3:
                     theEmotionArray[4] = theEmotionArray[4] * 0.50
-
+        print('---------------------------')
+        print("hScore+:", self.hScore)
+        print("sScore+:", self.sScore)
+        print("aScore+:", self.aScore)
+        print("fScore+:", self.fScore)
+        print("tScore+:", self.tScore)
         print('---------------------------')
         print("Emotion value Happy:", theEmotionArray[0])
         print("Emotion value Sad:", theEmotionArray[1])
@@ -303,3 +328,6 @@ class FeatureSpace:
         self.aScore, self.aValue = 0, 0
         self.fScore, self.fValue = 0, 0
         self.tScore, self.tValue = 0, 0
+        print("--------------------------------------------------------")
+        print("---------------- THE END OF ANALYSIS -------------------")
+        print("--------------------------------------------------------")

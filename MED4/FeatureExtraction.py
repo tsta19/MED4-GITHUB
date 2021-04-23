@@ -6,6 +6,7 @@ import math
 import os
 import wave
 from scipy.io import wavfile
+from FeatureSpace import FeatureSpace
 
 class FeatureExtraction:
 
@@ -21,6 +22,8 @@ class FeatureExtraction:
         # print("minPitch", self.minDigPitch)
         self.maxDigPitch = 1000 * 2 * np.pi / self.samplingFreq  # radians/sample
         # print("maxPitch", self.maxDigPitch)
+
+        self.fe = FeatureSpace()
 
     def combFilterPitchEstimation(self, inputSignal, minDigPitch, maxDigPitch):
         minPeriod = np.int(np.ceil(2 * np.pi / maxDigPitch))
@@ -64,10 +67,12 @@ class FeatureExtraction:
                 if noiseCounter > 3:
                     #print("ikke lyd")
                     if voiceCounter > 3:
+
                         pitch = np.mean(pitchArr)
                         dB = np.mean(decibelArr)
                         pitchVar = np.amax(pitchArr) - np.amin(pitchArr)
                         dBVar = np.amax(decibelArr) - np.amin(decibelArr)
+                        self.fe.checkEmotion([pitch,pitchVar,dBVar,dB])
                         print(pitch, dB, pitchVar, dBVar)
 
                     pitchArr = np.array([])
@@ -132,3 +137,6 @@ class FeatureExtraction:
                     voiceCounter = 0
                     noiseCounter = 0
         return [pitch, dB, pitchVar, dBVar]
+
+f = FeatureExtraction()
+f.get_features_live()

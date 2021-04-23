@@ -107,7 +107,7 @@ class FeatureExtraction:
             else:
                 newArr.append(data[x * chunk:len(data) - 1])
 
-        print(len(newArr))
+        #print(len(newArr))
 
         # create a numpy array holding a single read of audio data
         for i in range(len(newArr)):  # to it a few times just to see

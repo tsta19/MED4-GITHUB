@@ -18,24 +18,30 @@ class Evaluation:
     fe = FeatureExtraction()
 
     def getDataset(self, emotions):
-        for i in range(len(emotions)):
+        for x in range(len(emotions)):
             emotionArr = np.array([])
-            folder = "Sound_Files/Emotions/" + emotions[i] + "/"
+            folder = "Sound_Files/Emotions/" + emotions[x] + "/"
             for filename in os.listdir(folder):
-                tempArr = self.fe.get_features_from_clip(folder,filename)
                 if filename is not None:
-                    if len(emotionArr) == 0:
-                        emotionArr = tempArr
-                    else:
-                        for i in range(4):
-                            for ii in range(len(emotionArr[i])):
-                                emotionArr[i].append(tempArr[i][ii])
-
+                    tempArr = self.fe.get_features_from_clip(folder,filename)
+                    #print(tempArr)
+                    if len(tempArr[0]) != 0:
+                        if len(emotionArr) == 0:
+                            emotionArr = tempArr
+                        else:
+                            for i in range(4):
+                                for ii in range(len(tempArr[i])):
+                                    #print(str(i) + str(ii))
+                                    emotionArr[i].append(tempArr[i][ii])
+                #print(emotionArr)
             print(emotionArr)
+            print()
+            print(emotions[x])
             featureSpace = [np.mean(emotionArr[0]), np.mean(emotionArr[1]), np.mean(emotionArr[2]), np.mean(emotionArr[3])]
             print("Feature Mean: " + str(featureSpace))
             featureSTD = [np.std(emotionArr[0]), np.std(emotionArr[1]), np.std(emotionArr[2]), np.std(emotionArr[3])]
             print("Feature STD: " + str(featureSTD))
+            print()
 
 
     #Funktion som returnerer en string an på hvilket 'target' det har.
@@ -50,3 +56,6 @@ class Evaluation:
         for i in range(len(testY)):
             if testY[i] != predictions[i]:
                 print("error with [" + str(testX[i]) + "][" + str(testY[i]) + "]")
+
+e = Evaluation()
+e.getDataset(["Angry","Fear", "Happiness", "Sad", "Tender"])

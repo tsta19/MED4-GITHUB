@@ -151,30 +151,26 @@ class FeatureSpace:
         print("CheckPitchVariance:", pitchVariance)
         print("CheckSoundVariance:", soundVariance)
         print("CheckSound:", soundlvl)
+
         if pitch[1] == 0:
             self.hValue += pitch[0]
             self.hScore += 1
-            print("hscore+:", self.hScore)
 
         elif pitch[1] == 1:
             self.sValue += pitch[0]
             self.sScore += 1
-            print("sscore+:", self.sScore)
 
         elif pitch[1] == 2:
             self.aValue += pitch[0]
             self.aScore += 1
-            print("ascore+:", self.aScore)
 
         elif pitch[1] == 3:
             self.fValue += pitch[0]
             self.fScore += 1
-            print("fscore+:", self.fScore)
 
         elif pitch[1] == 4:
             self.tValue += pitch[0]
             self.tScore += 1
-            print("tscore+:", self.tScore)
 
         if pitchVariance[1] == 0:
             self.hValue += pitchVariance[0]
@@ -219,26 +215,66 @@ class FeatureSpace:
         if soundlvl[1] == 0:
             self.hValue += soundlvl[0]
             self.hScore += 1
+            print("hscore+:", self.hScore)
 
         elif soundlvl[1] == 1:
             self.sValue += soundlvl[0]
             self.sScore += 1
+            print("sscore+:", self.sScore)
 
         elif soundlvl[1] == 2:
             self.aValue += soundlvl[0]
             self.aScore += 1
+            print("ascore+:", self.aScore)
 
         elif soundlvl[1] == 3:
             self.fValue += soundlvl[0]
             self.fScore += 1
+            print("fscore+:", self.fScore)
 
         elif soundlvl[1] == 4:
             self.tValue += soundlvl[0]
             self.tScore += 1
+            print("tscore+:", self.tScore)
 
         theEmotionArray = [self.weirdDivision(self.hValue, self.hScore), self.weirdDivision(self.sValue, self.sScore),
                            self.weirdDivision(self.aValue, self.aScore), self.weirdDivision(self.fValue, self.fScore),
                            self.weirdDivision(self.tValue, self.tScore)]
+
+        if self.hScore > 1:
+            theEmotionArray[0] = theEmotionArray[0] * 0.70
+            if self.hScore > 2:
+                theEmotionArray[0] = theEmotionArray[0] * 0.70
+                if self.hScore > 3:
+                    theEmotionArray[0] = theEmotionArray[0] * 0.50
+
+        if self.sScore > 1:
+            theEmotionArray[1] = theEmotionArray[1] * 0.70
+            if self.sScore > 2:
+                theEmotionArray[1] = theEmotionArray[1] * 0.70
+                if self.sScore > 3:
+                    theEmotionArray[1] = theEmotionArray[1] * 0.50
+
+        if self.aScore > 1:
+            theEmotionArray[2] = theEmotionArray[2] * 0.70
+            if self.aScore > 2:
+                theEmotionArray[2] = theEmotionArray[2] * 0.70
+                if self.aScore > 3:
+                    theEmotionArray[2] = theEmotionArray[2] * 0.50
+
+        if self.fScore > 1:
+            theEmotionArray[3] = theEmotionArray[3] * 0.70
+            if self.fScore > 2:
+                theEmotionArray[3] = theEmotionArray[3] * 0.70
+                if self.fScore > 3:
+                    theEmotionArray[3] = theEmotionArray[3] * 0.50
+
+        if self.tScore > 1:
+            theEmotionArray[4] = theEmotionArray[4] * 0.70
+            if self.tScore > 2:
+                theEmotionArray[4] = theEmotionArray[4] * 0.70
+                if self.tScore > 3:
+                    theEmotionArray[4] = theEmotionArray[4] * 0.50
 
         print('---------------------------')
         print("Emotion value Happy:", theEmotionArray[0])

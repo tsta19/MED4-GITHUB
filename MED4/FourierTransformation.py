@@ -28,7 +28,7 @@ PSD = fhat * np.conj(fhat) / n  ## Computing power spectrum of the signal
 freq = (1 / (dt * n) * np.arange(n))  ## Making freqeuncies for x-axis
 L = np.arange(1, np.floor(n / 2), dtype="int")  ## Only plot the first half of freqs, this seperates the second half
 
-indices = PSD > max(PSD) * 0.8  # Find all freqs with large power
+indices = PSD > max(PSD) * 0.40  # Find all freqs with large power
 
 PSDclean = PSD * indices  # Zero out all others
 fhat = indices * fhat  # Zero out small Fourier coeffs. in Y

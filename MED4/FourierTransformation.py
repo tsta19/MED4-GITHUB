@@ -32,8 +32,8 @@ indices = PSD > max(PSD) * 0.8  # Find all freqs with large power
 
 PSDclean = PSD * indices  # Zero out all others
 fhat = indices * fhat  # Zero out small Fourier coeffs. in Y
-ffilt = np.fft.ifft(fhat)
-absFfilt = ffilt.real
+ffilt = np.fft.ifft(fhat)  #inverse fourier to receive denoised signal
+absFfilt = ffilt.real       #Only return real numbers as write() function cant write complex numbers
 
 
 def getFreqDistribution(data):

@@ -10,87 +10,51 @@ class FeatureSpace:
     fScore, fValue = 0, 0
     tScore, tValue = 0, 0
 
-    pitchMean_happy = 0
-    pitchStd_happy = 0
-    pitchMean_sad = 0
-    pitchStd_sad = 0
-    pitchMean_angry = 0
-    pitchStd_angry = 0
-    pitchMean_fear = 0
-    pitchStd_fear = 0
-    pitchMean_tender = 0
-    pitchStd_tender = 0
+    pitchMean_happy = 107.36030064326853
+    pitchStd_happy = 9.7060824240088
+    pitchMean_sad = 102.55473052021894
+    pitchStd_sad = 9.176241863297498
+    pitchMean_angry = 119.4774692941384
+    pitchStd_angry = 15.933613610064395
+    pitchMean_fear = 132.34945603522874
+    pitchStd_fear = 13.452992893809547
+    pitchMean_tender = 113.60769985724662
+    pitchStd_tender = 9.01256789027346
 
-    pitchVariMean_happy = 0
-    pitchVariStd_happy = 0
-    pitchVariMean_sad = 0
-    pitchVariStd_sad = 0
-    pitchVariMean_angry = 0
-    pitchVariStd_angry = 0
-    pitchVariMean_fear = 0
-    pitchVariStd_fear = 0
-    pitchVariMean_tender = 0
-    pitchVariStd_tender = 0
+    pitchVariMean_happy = 57.21247841446778
+    pitchVariStd_happy = 29.477671770697686
+    pitchVariMean_sad = 37.9399161614971
+    pitchVariStd_sad = 28.302112679388173
+    pitchVariMean_angry = 67.89347660594153
+    pitchVariStd_angry = 28.35744522689046
+    pitchVariMean_fear = 90.83493760486154
+    pitchVariStd_fear = 25.589842125148287
+    pitchVariMean_tender = 65.73697819631049
+    pitchVariStd_tender = 28.520669923988216
 
-    soundVariMean_happy = 0
-    soundVariStd_happy = 0
-    soundVariMean_sad = 0
-    soundVariStd_sad = 0
-    soundVariMean_angry = 0
-    soundVariStd_angry = 0
-    soundVariMean_fear = 0
-    soundVariStd_fear = 0
-    soundVariMean_tender = 0
-    soundVariStd_tender = 0
+    soundVariMean_happy = 10.637224963253264
+    soundVariStd_happy = 3.2093081907735157
+    soundVariMean_sad = 6.869504579601349
+    soundVariStd_sad = 4.1775828641675075
+    soundVariMean_angry = 16.090760123707234
+    soundVariStd_angry = 3.7181822634589965
+    soundVariMean_fear = 12.594669178453046
+    soundVariStd_fear = 4.819693699789634
+    soundVariMean_tender = 9.27757095499356
+    soundVariStd_tender = 4.377346340729348
 
-    soundlvlMean_happy = 0
-    soundlvlStd_happy = 0
-    soundlvlMean_sad = 0
-    soundlvlStd_sad = 0
-    soundlvlMean_angry = 0
-    soundlvlStd_angry = 0
-    soundlvlMean_fear = 0
-    soundlvlStd_fear = 0
-    soundlvlMean_tender = 0
-    soundlvlStd_tender = 0
+    soundlvlMean_happy = 66.50103642574857
+    soundlvlStd_happy = 1.4773186300113783
+    soundlvlMean_sad = 62.519085453334675
+    soundlvlStd_sad = 1.8658598150463226
+    soundlvlMean_angry = 70.09925905153821
+    soundlvlStd_angry = 3.039090517331451
+    soundlvlMean_fear = 67.13781794326991
+    soundlvlStd_fear = 1.6635825145896928
+    soundlvlMean_tender = 66.82172943945206
+    soundlvlStd_tender = 1.804376296123412
 
-    # pitchMin_happy = 0
-    # pitchMax_happy = 0
-    # pitchMin_sad = 0
-    # pitchMax_sad = 0
-    # pitchMin_angry = 0
-    # pitchMax_angry = 0
-    # pitchMin_fear = 0
-    # pitchMax_fear = 0
-    #
-    # pitchVariMin_happy = 0
-    # pitchVariMax_happy = 0
-    # pitchVariMin_sad = 0
-    # pitchVariMax_sad = 0
-    # pitchVariMin_angry = 0
-    # pitchVariMax_angry = 0
-    # pitchVariMin_fear = 0
-    # pitchVariMax_fear = 0
-    #
-    # soundVariMin_happy = 0
-    # soundVariMax_happy = 0
-    # soundVariMin_sad = 0
-    # soundVariMax_sad = 0
-    # soundVariMin_angry = 0
-    # soundVariMax_angry = 0
-    # soundVariMin_fear = 0
-    # soundVariMax_fear = 0
-    #
-    # soundlvlMin_happy = 0
-    # soundlvlMax_happy = 0
-    # soundlvlMin_sad = 0
-    # soundlvlMax_sad = 0
-    # soundlvlMin_angry = 0
-    # soundlvlMax_angry = 0
-    # soundlvlMin_fear = 0
-    # soundlvlMax_fear = 0
-
-    # measurementsArray = [pitchlvl, pitchVari, soundVari, soundlvl]
+    # measurementsArray = [pitchlvl, soundlvl, pitchVari, soundVari]
 
     def getDistance(self, featureMeasurement, featureValue):
         distance = np.sqrt((featureValue - featureMeasurement) ** 2)
@@ -186,61 +150,61 @@ class FeatureSpace:
         if pitch[1] == 0:
             self.hValue + pitch[0], self.hScore + 1
 
-        if pitch[1] == 1:
+        elif pitch[1] == 1:
             self.sValue + pitch[0], self.sScore + 1
 
-        if pitch[1] == 2:
+        elif pitch[1] == 2:
             self.aValue + pitch[0], self.aScore + 1
 
-        if pitch[1] == 3:
+        elif pitch[1] == 3:
             self.fValue + pitch[0], self.fScore + 1
 
-        if pitch[1] == 4:
+        elif pitch[1] == 4:
             self.tValue + pitch[0], self.tScore + 1
 
         if pitchVariance[1] == 0:
             self.hValue + pitchVariance[0], self.hScore + 1
 
-        if pitchVariance[1] == 1:
+        elif pitchVariance[1] == 1:
             self.sValue + pitchVariance[0], self.sScore + 1
 
-        if pitchVariance[1] == 2:
+        elif pitchVariance[1] == 2:
             self.aValue + pitchVariance[0], self.aScore + 1
 
-        if pitchVariance[1] == 3:
+        elif pitchVariance[1] == 3:
             self.fValue + pitchVariance[0], self.fScore + 1
 
-        if pitchVariance[1] == 4:
+        elif pitchVariance[1] == 4:
             self.tValue + pitchVariance[0], self.tScore + 1
 
         if soundVariance[1] == 0:
             self.hValue + soundVariance[0], self.hScore + 1
 
-        if soundVariance[1] == 1:
+        elif soundVariance[1] == 1:
             self.sValue + soundVariance[0], self.sScore + 1
 
-        if soundVariance[1] == 2:
+        elif soundVariance[1] == 2:
             self.aValue + soundVariance[0], self.aScore + 1
 
-        if soundVariance[1] == 3:
+        elif soundVariance[1] == 3:
             self.fValue + soundVariance[0], self.fScore + 1
 
-        if soundVariance[1] == 4:
+        elif soundVariance[1] == 4:
             self.tValue + soundVariance[0], self.tScore + 1
 
         if soundlvl[1] == 0:
             self.hValue + soundlvl[0], self.hScore + 1
 
-        if soundlvl[1] == 1:
+        elif soundlvl[1] == 1:
             self.sValue + soundlvl[0], self.sScore + 1
 
-        if soundlvl[1] == 2:
+        elif soundlvl[1] == 2:
             self.aValue + soundlvl[0], self.aScore + 1
 
-        if soundlvl[1] == 3:
+        elif soundlvl[1] == 3:
             self.fValue + soundlvl[0], self.fScore + 1
 
-        if soundlvl[1] == 4:
+        elif soundlvl[1] == 4:
             self.tValue + soundlvl[0], self.tScore + 1
 
         theEmotionArray = [self.weirdDivision(self.hValue, self.hScore), self.weirdDivision(self.sValue, self.sScore),

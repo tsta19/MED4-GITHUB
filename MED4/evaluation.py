@@ -13,6 +13,7 @@ import os
 import wave
 from FeatureExtraction import FeatureExtraction
 
+
 class Evaluation:
 
     fe = FeatureExtraction()
@@ -24,7 +25,7 @@ class Evaluation:
             for filename in os.listdir(folder):
                 if filename is not None:
                     tempArr = self.fe.get_features_from_clip(folder,filename)
-                    #print(tempArr)
+                    print(tempArr)
                     if len(tempArr[0]) != 0:
                         if len(emotionArr) == 0:
                             emotionArr = tempArr

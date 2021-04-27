@@ -73,7 +73,7 @@ class FeatureSpace:
     soundlvlMean_tender = features[8][1]
     soundlvlStd_tender = features[9][1]
 
-    # measurementsArray = [pitchlvl, soundlvl, pitchVari, soundVari]
+    # measurementsArray = [pitchlvl, pitchVari, soundVari, soundlvl]
 
     def getDistance(self, featureMeasurement, featureValue):
         distance = np.sqrt((featureValue - featureMeasurement) ** 2)

@@ -18,6 +18,10 @@ class Evaluation:
     fe = FeatureExtraction()
 
     def getDataset(self, emotions):
+        f = open("featurespacevariables.txt", "w")
+        f.write(str(emotions)+"\n")
+        f.write("pitch, sound level, pitch variance, sound level variance\n")
+
         for x in range(len(emotions)):
             emotionArr = np.array([])
             folder = "Sound_Files/Emotions/" + emotions[x] + "/"
@@ -43,6 +47,10 @@ class Evaluation:
             featureSTD = [np.std(emotionArr[0]), np.std(emotionArr[1]), np.std(emotionArr[2]), np.std(emotionArr[3])]
             print("Feature STD: " + str(featureSTD))
             print()
+
+            f.write(str(featureSpace)+"\n")
+            f.write(str(featureSTD)+"\n")
+        f.close()
 
     # Funktion som returnerer en string an på hvilket 'target' det har.
     def target_type(self, row):

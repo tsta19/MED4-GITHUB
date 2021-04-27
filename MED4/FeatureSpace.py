@@ -11,49 +11,67 @@ class FeatureSpace:
 
     theEmotionScores = [hScore, sScore, aScore, fScore, tScore]
 
-    pitchMean_happy = 107.36030064326853
-    pitchStd_happy = 9.7060824240088
-    pitchMean_sad = 102.55473052021894
-    pitchStd_sad = 9.176241863297498
-    pitchMean_angry = 119.4774692941384
-    pitchStd_angry = 15.933613610064395
-    pitchMean_fear = 132.34945603522874
-    pitchStd_fear = 13.452992893809547
-    pitchMean_tender = 113.60769985724662
-    pitchStd_tender = 9.01256789027346
+    print("Getting imput from list")
 
-    pitchVariMean_happy = 57.21247841446778
-    pitchVariStd_happy = 29.477671770697686
-    pitchVariMean_sad = 37.9399161614971
-    pitchVariStd_sad = 28.302112679388173
-    pitchVariMean_angry = 67.89347660594153
-    pitchVariStd_angry = 28.35744522689046
-    pitchVariMean_fear = 90.83493760486154
-    pitchVariStd_fear = 25.589842125148287
-    pitchVariMean_tender = 65.73697819631049
-    pitchVariStd_tender = 28.520669923988216
+    f = open("featurespacevariables.txt", "r")
+    input = f.read()
+    print(input)
+    lines = input.replace("[","").replace("]","").strip().split('\n')
+    print(len(lines))
+    print(lines)
+    features = [[0.0 for i in range(4)] for ii in range(len(lines)-2)]
+    print(features)
+    for i in range(2, len(lines)):
+        arr = lines[i].split(", ")
+        for x in range(len(arr)):
+            features[i-2][x] = float(arr[x])
 
-    soundVariMean_happy = 10.637224963253264
-    soundVariStd_happy = 3.2093081907735157
-    soundVariMean_sad = 6.869504579601349
-    soundVariStd_sad = 4.1775828641675075
-    soundVariMean_angry = 16.090760123707234
-    soundVariStd_angry = 3.7181822634589965
-    soundVariMean_fear = 12.594669178453046
-    soundVariStd_fear = 4.819693699789634
-    soundVariMean_tender = 9.27757095499356
-    soundVariStd_tender = 4.377346340729348
+    print(features)
+    print("Done getting input from list")
 
-    soundlvlMean_happy = 66.50103642574857
-    soundlvlStd_happy = 1.4773186300113783
-    soundlvlMean_sad = 62.519085453334675
-    soundlvlStd_sad = 1.8658598150463226
-    soundlvlMean_angry = 70.09925905153821
-    soundlvlStd_angry = 3.039090517331451
-    soundlvlMean_fear = 67.13781794326991
-    soundlvlStd_fear = 1.6635825145896928
-    soundlvlMean_tender = 66.82172943945206
-    soundlvlStd_tender = 1.804376296123412
+    pitchMean_happy = features[4][0]
+    pitchStd_happy = features[5][0]
+    pitchMean_sad = features[6][0]
+    pitchStd_sad = features[7][0]
+    pitchMean_angry = features[0][0]
+    pitchStd_angry = features[1][0]
+    pitchMean_fear = features[2][0]
+    pitchStd_fear = features[3][0]
+    pitchMean_tender = features[8][0]
+    pitchStd_tender = features[9][0]
+
+    pitchVariMean_happy = features[4][2]
+    pitchVariStd_happy = features[5][2]
+    pitchVariMean_sad = features[6][2]
+    pitchVariStd_sad = features[7][2]
+    pitchVariMean_angry = features[0][2]
+    pitchVariStd_angry = features[1][2]
+    pitchVariMean_fear = features[2][2]
+    pitchVariStd_fear = features[3][2]
+    pitchVariMean_tender = features[8][2]
+    pitchVariStd_tender = features[9][2]
+
+    soundVariMean_happy = features[4][3]
+    soundVariStd_happy = features[5][3]
+    soundVariMean_sad = features[6][3]
+    soundVariStd_sad = features[7][3]
+    soundVariMean_angry = features[0][3]
+    soundVariStd_angry = features[1][3]
+    soundVariMean_fear = features[2][3]
+    soundVariStd_fear = features[3][3]
+    soundVariMean_tender = features[8][3]
+    soundVariStd_tender = features[9][3]
+
+    soundlvlMean_happy = features[4][1]
+    soundlvlStd_happy = features[5][1]
+    soundlvlMean_sad = features[6][1]
+    soundlvlStd_sad = features[7][1]
+    soundlvlMean_angry = features[0][1]
+    soundlvlStd_angry = features[1][1]
+    soundlvlMean_fear = features[2][1]
+    soundlvlStd_fear = features[3][1]
+    soundlvlMean_tender = features[8][1]
+    soundlvlStd_tender = features[9][1]
 
     # measurementsArray = [pitchlvl, soundlvl, pitchVari, soundVari]
 

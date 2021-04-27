@@ -153,5 +153,5 @@ class FeatureExtraction:
                     noiseCounter = 0
         return [pitch, dB, pitchVar, dBVar]
 
-f = FeatureExtraction()
-f.get_features_live()
+#f = FeatureExtraction()
+#f.get_features_live()

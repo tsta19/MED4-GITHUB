@@ -5,6 +5,8 @@ import audioop
 import math
 import os
 import wave
+
+import serial
 from scipy.io import wavfile
 from FeatureSpace import FeatureSpace
 
@@ -43,6 +45,7 @@ class FeatureExtraction:
         return estDigPitch, periodGrid, normAutoCorr
 
     def get_features_live(self):
+        #ser = serial.Serial("COM3", 9600) comment in when arduino is in use
         voiceCounter = 0
         pitchArr = np.array([])
         decibelArr = np.array([])
@@ -69,13 +72,20 @@ class FeatureExtraction:
                     if voiceCounter > 3:
 
                         pitch, dB, pitchVar, dBVar = self.get_features_from_arrays(pitchArr, decibelArr)
-                        self.fe.checkEmotion([pitch,pitchVar,dBVar,dB])
+                        emotion = self.fe.checkEmotion([pitch,pitchVar,dBVar,dB])
                         print("Feature values (P, dB, PV, dBV):", pitch, dB, pitchVar, dBVar)
+                        #ser.write(f"{emotion}".encode()) comment in when arduino is in use
+                        #print("Value returned:", ser.read().decode()) comment in when arduino is in use
 
                     pitchArr = np.array([])
                     decibelArr = np.array([])
                     voiceCounter = 0
                     noiseCounter = 0
+
+
+
+
+
 
     def get_features_from_arrays(self, arrP, arrSL):
         pitch = np.mean(arrP)

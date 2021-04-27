@@ -36,6 +36,73 @@ ffilt = np.fft.ifft(fhat)  #inverse fourier to receive denoised signal
 absFfilt = ffilt.real       #Only return real numbers as write() function cant write complex numbers
 
 
+
+def autoCorrelationOnClip(soundDirectory, fileName):
+    soundFilesSpec = os.path.join(soundDirectory, fileName)
+    samplerate, data = wavfile.read(soundFilesSpec)
+    length = data.shape[0] / samplerate
+
+    time = np.linspace(0., length, data.shape[0])  # list the size of samplesize with 1 sample-time length per iteration
+    f = data  # Signal
+    dt = time[4] - time[3]  ##Iteration length variable
+    n = len(time)  ##Amount of samples
+    fhat = np.fft.fft(f, n)  ### Fourier transformed signal
+    PSD = fhat * np.conj(fhat) / n  ## Computing power spectrum of the signal
+    freq = (1 / (dt * n) * np.arange(n))  ## Making freqeuncies for x-axis
+    L = np.arange(1, np.floor(n / 2), dtype="int")  ## Only plot the first half of freqs, this seperates the second half
+
+    indices = PSD > max(PSD) * 0.20  # Find all freqs with large power
+
+    PSDclean = PSD * indices  # Zero out all others
+    fhat = indices * fhat  # Zero out small Fourier coeffs. in Y
+    ffilt = np.fft.ifft(fhat)  # inverse fourier to receive denoised signal
+    absFfilt = ffilt.real  # Only return real numbers as write() function cant write complex numbers
+    write("yyyyxu.wav", 22050, absFfilt)
+
+    for i in range(len(freq[L])):
+        if PSDclean[i] == max(PSDclean[L]):
+            print("--------------------------------------------------")
+            print("Most powerful frequency in the power spectrum:", freq[i])
+            break
+
+def autoCorrelateDirectory(emotions):
+    for x in range(len(emotions)):
+        emotionArr = np.array([])
+        folder = "Sound_Files/Emotions/" + emotions[x] + "/"
+        for filename in os.listdir(folder):
+            if filename is not None:
+                iteration
+                soundFilesSpec = os.path.join(soundDirectory, fileName)
+                samplerate, data = wavfile.read(soundFilesSpec)
+                length = data.shape[0] / samplerate
+
+                time = np.linspace(0., length,
+                                   data.shape[0])  # list the size of samplesize with 1 sample-time length per iteration
+                f = data  # Signal
+                dt = time[4] - time[3]  ##Iteration length variable
+                n = len(time)  ##Amount of samples
+                fhat = np.fft.fft(f, n)  ### Fourier transformed signal
+                PSD = fhat * np.conj(fhat) / n  ## Computing power spectrum of the signal
+                freq = (1 / (dt * n) * np.arange(n))  ## Making freqeuncies for x-axis
+                L = np.arange(1, np.floor(n / 2),
+                              dtype="int")  ## Only plot the first half of freqs, this seperates the second half
+
+                indices = PSD > max(PSD) * 0.20  # Find all freqs with large power
+
+                PSDclean = PSD * indices  # Zero out all others
+                fhat = indices * fhat  # Zero out small Fourier coeffs. in Y
+                ffilt = np.fft.ifft(fhat)  # inverse fourier to receive denoised signal
+                absFfilt = ffilt.real  # Only return real numbers as write() function cant write complex numbers
+                write("yyyyxu.wav", 22050, absFfilt)
+
+                for i in range(len(freq[L])):
+                    if PSDclean[i] == max(PSDclean[L]):
+                        print("--------------------------------------------------")
+                        print("Most powerful frequency in the power spectrum:", freq[i])
+                        break
+                pass
+    pass
+
 def getFreqDistribution(data):
     freq01 = []
     freq12 = []
@@ -86,6 +153,7 @@ def getFreqDistribution(data):
 
         if 1100 < data[j] * 10000 < 1200:
             freq1112.append(data[j])
+
     print("--------------------------------------------------")
     print("Total amount of samples:", len(data))
     print("Samples in frequency range 0-100:", len(freq01))
@@ -152,10 +220,6 @@ if __name__ == "__main__":
     print("Maximum frequency:", np.max(abs(absFfilt)) * 10000)
     print("Minimum frequency:", np.min(abs(absFfilt)) * 10000)
 
-    for i in range(len(freq[L])):
-        if PSDclean[i] == max(PSDclean[L]):
-            print("--------------------------------------------------")
-            print("Most powerful frequency in the power spectrum:", freq[i])
-            break
+
 
     getFreqDistribution(absFfilt)

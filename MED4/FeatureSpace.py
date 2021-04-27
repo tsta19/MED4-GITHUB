@@ -124,6 +124,13 @@ class FeatureSpace:
         mostProbableMood = [min(soundVarianceRelation), soundVarianceRelation.index(min(soundVarianceRelation))]
         return mostProbableMood
 
+    def resetMoodScores(self):
+        self.hScore, self.hValue = 0, 0
+        self.sScore, self.sValue = 0, 0
+        self.aScore, self.aValue = 0, 0
+        self.fScore, self.fValue = 0, 0
+        self.tScore, self.tValue = 0, 0
+
     def checkSound(self, measurementsArray):
         sHappy = self.getRelation(self.soundlvlMean_happy, self.soundlvlStd_happy, measurementsArray[3])
         sSad = self.getRelation(self.soundlvlMean_sad, self.soundlvlStd_sad, measurementsArray[3])
@@ -310,24 +317,30 @@ class FeatureSpace:
         print('---------------------------')
         if theEmotionArray.index(min(theEmotionArray)) == 0:
             print("Happy")
+            self.resetMoodScores()
+            return 0
 
         if theEmotionArray.index(min(theEmotionArray)) == 1:
             print("Sad")
+            self.resetMoodScores()
+            return 1
 
         if theEmotionArray.index(min(theEmotionArray)) == 2:
             print("Angry")
+            self.resetMoodScores()
+            return 2
 
         if theEmotionArray.index(min(theEmotionArray)) == 3:
             print("Fear")
+            self.resetMoodScores()
+            return 3
 
         if theEmotionArray.index(min(theEmotionArray)) == 4:
             print("Tender")
+            self.resetMoodScores()
+            return 4
 
-        self.hScore, self.hValue = 0, 0
-        self.sScore, self.sValue = 0, 0
-        self.aScore, self.aValue = 0, 0
-        self.fScore, self.fValue = 0, 0
-        self.tScore, self.tValue = 0, 0
         print("--------------------------------------------------------")
         print("---------------- THE END OF ANALYSIS -------------------")
         print("--------------------------------------------------------")
+

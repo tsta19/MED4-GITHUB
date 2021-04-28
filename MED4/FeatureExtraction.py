@@ -5,10 +5,10 @@ import audioop
 import math
 import os
 import wave
-
 import serial
 from scipy.io import wavfile
 from FeatureSpace import FeatureSpace
+
 
 class FeatureExtraction:
 
@@ -50,7 +50,7 @@ class FeatureExtraction:
         pitchArr = np.array([])
         decibelArr = np.array([])
         noiseCounter = 0
-
+        dBArr = np.array([])
         p = pyaudio.PyAudio()  # start the PyAudio class
         stream = p.open(format=pyaudio.paInt16, channels=1, rate=self.RATE, input=True,
                         frames_per_buffer=self.CHUNK)  # uses default input device
@@ -58,8 +58,12 @@ class FeatureExtraction:
         while True:
             data = np.frombuffer(stream.read(self.CHUNK), dtype=np.int16)
             decibel, pi = self.get_features_from_segment(data)
+            
+            dBArr = np.append(dBArr, decibel)
+            with open("fakintextfile.txt", "w") as file:
+                file.write(str(dBArr))
 
-            if 55 < pi < 175:
+            if decibel > 59:
                 #print('The estimated pitch is {0:.2f} Hz.'.format(pi))
                 voiceCounter += 1
                 pitchArr = np.append(pitchArr, pi)
@@ -74,6 +78,8 @@ class FeatureExtraction:
                         pitch, dB, pitchVar, dBVar = self.get_features_from_arrays(pitchArr, decibelArr)
                         emotion = self.fe.checkEmotion([pitch,pitchVar,dBVar,dB])
                         print("Feature values (P, dB, PV, dBV):", pitch, dB, pitchVar, dBVar)
+
+
                         #ser.write(f"{emotion}".encode()) comment in when arduino is in use
                         #print("Value returned:", ser.read().decode()) comment in when arduino is in use
 
@@ -81,11 +87,6 @@ class FeatureExtraction:
                     decibelArr = np.array([])
                     voiceCounter = 0
                     noiseCounter = 0
-
-
-
-
-
 
     def get_features_from_arrays(self, arrP, arrSL):
         pitch = np.mean(arrP)
@@ -131,7 +132,7 @@ class FeatureExtraction:
         for i in range(len(newArr)):  # to it a few times just to see
             decibel, p = self.get_features_from_segment(newArr[i])
 
-            if 55 < p < 175:
+            if 59 < decibel:
                 voiceCounter += 1
                 pitchArr = np.append(pitchArr, p)
                 decibelArr = np.append(decibelArr, decibel)
@@ -153,5 +154,5 @@ class FeatureExtraction:
                     noiseCounter = 0
         return [pitch, dB, pitchVar, dBVar]
 
-#f = FeatureExtraction()
-#f.get_features_live()
+f = FeatureExtraction()
+f.get_features_live()

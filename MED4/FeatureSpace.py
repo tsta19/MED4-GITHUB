@@ -11,59 +11,60 @@ class FeatureSpace:
     prevState = 0
     theEmotionScores = [hScore, sScore, aScore, fScore, tScore]
 
-    print("Getting imput from list")
+    def setFeatureSpaces(self):
+        print("Getting imput from list")
 
-    f = open("featurespacevariables.txt", "r")
-    input = f.read()
-    print(input)
-    lines = input.replace("[", "").replace("]", "").strip().split('\n')
-    print(len(lines))
-    print(lines)
-    features = [[0.0 for i in range(4)] for ii in range(len(lines) - 2)]
-    print(features)
-    for i in range(2, len(lines)):
-        arr = lines[i].split(", ")
-        for x in range(len(arr)):
-            features[i - 2][x] = float(arr[x])
+        f = open("featurespacevariables.txt", "r")
+        input = f.read()
+        print(input)
+        lines = input.replace("[", "").replace("]", "").strip().split('\n')
+        print(len(lines))
+        print(lines)
+        features = [[0.0 for i in range(4)] for ii in range(len(lines) - 2)]
+        print(features)
+        for i in range(2, len(lines)):
+            arr = lines[i].split(", ")
+            for x in range(len(arr)):
+                features[i - 2][x] = float(arr[x])
 
-    print(features)
-    print("Done getting input from list")
+        print(features)
+        print("Done getting input from list")
 
-    pitchMean_happy = features[4][0]
-    pitchStd_happy = features[5][0]
-    pitchMean_sad = features[6][0]
-    pitchStd_sad = features[7][0]
-    pitchMean_angry = features[0][0]
-    pitchStd_angry = features[1][0]
-    pitchMean_fear = features[2][0]
-    pitchStd_fear = features[3][0]
+        self.pitchMean_happy = features[4][0]
+        self.pitchStd_happy = features[5][0]
+        self.pitchMean_sad = features[6][0]
+        self.pitchStd_sad = features[7][0]
+        self.pitchMean_angry = features[0][0]
+        self.pitchStd_angry = features[1][0]
+        self.pitchMean_fear = features[2][0]
+        self.pitchStd_fear = features[3][0]
 
-    pitchVariMean_happy = features[4][2]
-    pitchVariStd_happy = features[5][2]
-    pitchVariMean_sad = features[6][2]
-    pitchVariStd_sad = features[7][2]
-    pitchVariMean_angry = features[0][2]
-    pitchVariStd_angry = features[1][2]
-    pitchVariMean_fear = features[2][2]
-    pitchVariStd_fear = features[3][2]
+        self.pitchVariMean_happy = features[4][2]
+        self.pitchVariStd_happy = features[5][2]
+        self.pitchVariMean_sad = features[6][2]
+        self.pitchVariStd_sad = features[7][2]
+        self.pitchVariMean_angry = features[0][2]
+        self.pitchVariStd_angry = features[1][2]
+        self.pitchVariMean_fear = features[2][2]
+        self.pitchVariStd_fear = features[3][2]
 
-    soundVariMean_happy = features[4][3]
-    soundVariStd_happy = features[5][3]
-    soundVariMean_sad = features[6][3]
-    soundVariStd_sad = features[7][3]
-    soundVariMean_angry = features[0][3]
-    soundVariStd_angry = features[1][3]
-    soundVariMean_fear = features[2][3]
-    soundVariStd_fear = features[3][3]
+        self.soundVariMean_happy = features[4][3]
+        self.soundVariStd_happy = features[5][3]
+        self.soundVariMean_sad = features[6][3]
+        self.soundVariStd_sad = features[7][3]
+        self.soundVariMean_angry = features[0][3]
+        self.soundVariStd_angry = features[1][3]
+        self.soundVariMean_fear = features[2][3]
+        self.soundVariStd_fear = features[3][3]
 
-    soundlvlMean_happy = features[4][1]
-    soundlvlStd_happy = features[5][1]
-    soundlvlMean_sad = features[6][1]
-    soundlvlStd_sad = features[7][1]
-    soundlvlMean_angry = features[0][1]
-    soundlvlStd_angry = features[1][1]
-    soundlvlMean_fear = features[2][1]
-    soundlvlStd_fear = features[3][1]
+        self.soundlvlMean_happy = features[4][1]
+        self.soundlvlStd_happy = features[5][1]
+        self.soundlvlMean_sad = features[6][1]
+        self.soundlvlStd_sad = features[7][1]
+        self.soundlvlMean_angry = features[0][1]
+        self.soundlvlStd_angry = features[1][1]
+        self.soundlvlMean_fear = features[2][1]
+        self.soundlvlStd_fear = features[3][1]
 
     # measurementsArray = [pitchlvl, pitchVari, soundVari, soundlvl]
 
@@ -118,7 +119,7 @@ class FeatureSpace:
         svAngry = self.getRelation(self.soundVariMean_angry, self.soundVariStd_angry, measurementsArray[2])
         svFear = self.getRelation(self.soundVariMean_fear, self.soundVariStd_fear, measurementsArray[2])
 
-        soundVarianceRelation = [svHappy, svSad, svAngry, svFear, svTender]
+        soundVarianceRelation = [svHappy, svSad, svAngry, svFear]
         print('---------------------------')
         print("Sound Variance Happy:", soundVarianceRelation[0])
         print("Sound Variance Sad:", soundVarianceRelation[1])

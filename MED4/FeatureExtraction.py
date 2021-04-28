@@ -27,6 +27,9 @@ class FeatureExtraction:
 
         self.fe = FeatureSpace()
 
+    def getFeatureSpace(self):
+        return self.fe
+
     def combFilterPitchEstimation(self, inputSignal, minDigPitch, maxDigPitch):
         minPeriod = np.int(np.ceil(2 * np.pi / maxDigPitch))
         maxPeriod = np.int(np.floor(2 * np.pi / minDigPitch))
@@ -128,6 +131,8 @@ class FeatureExtraction:
 
         #print(len(newArr))
 
+        features = []
+
         # create a numpy array holding a single read of audio data
         for i in range(len(newArr)):  # to it a few times just to see
             decibel, p = self.get_features_from_segment(newArr[i])
@@ -148,11 +153,13 @@ class FeatureExtraction:
                         pitchVar.append(pVar)
                         dBVar.append(sVar)
 
+                        features.append([p, s, pVar, sVar])
+
                     pitchArr = np.array([])
                     decibelArr = np.array([])
                     voiceCounter = 0
                     noiseCounter = 0
-        return [pitch, dB, pitchVar, dBVar]
+        return features
 
-f = FeatureExtraction()
-f.get_features_live()
+#f = FeatureExtraction()
+#f.get_features_live()

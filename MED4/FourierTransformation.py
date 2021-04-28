@@ -103,7 +103,7 @@ def mostPowerfulFrequency(data1, samplerate1):
 
 
 if __name__ == "__main__":
- 
+    pass
     # wav_fname = "detteerentest.wav"
     # data, samplerate = lbs.load(wav_fname)
     #

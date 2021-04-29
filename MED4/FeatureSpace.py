@@ -7,9 +7,10 @@ class FeatureSpace:
     sScore, sValue = 0, 0
     aScore, aValue = 0, 0
     fScore, fValue = 0, 0
-    tScore, tValue = 0, 0
     prevState = 0
-    theEmotionScores = [hScore, sScore, aScore, fScore, tScore]
+    theEmotionScores = [hScore, sScore, aScore, fScore]
+
+    featuresNum = 5
 
     def setFeatureSpaces(self):
         print("Getting imput from list")
@@ -20,7 +21,7 @@ class FeatureSpace:
         lines = input.replace("[", "").replace("]", "").strip().split('\n')
         print(len(lines))
         print(lines)
-        features = [[0.0 for i in range(4)] for ii in range(len(lines) - 2)]
+        features = [[0.0 for i in range(self.featuresNum)] for ii in range(len(lines) - 2)]
         print(features)
         for i in range(2, len(lines)):
             arr = lines[i].split(", ")
@@ -66,7 +67,16 @@ class FeatureSpace:
         self.soundlvlMean_fear = features[2][1]
         self.soundlvlStd_fear = features[3][1]
 
-    # measurementsArray = [pitchlvl, pitchVari, soundVari, soundlvl]
+        self.pwrFreqMean_happy = features[4][4]
+        self.pwrFreqStd_happy = features[5][4]
+        self.pwrFreqMean_sad = features[6][4]
+        self.pwrFreqStd_sad = features[7][4]
+        self.pwrFreqMean_angry = features[0][4]
+        self.pwrFreqStd_angry = features[1][4]
+        self.pwrFreqMean_fear = features[2][4]
+        self.pwrFreqStd_fear = features[3][4]
+
+        # measurementsArray = [pitchlvl, pitchVari, soundVari, soundlvl, powerFreq]
 
     def getDistance(self, featureMeasurement, featureValue):
         distance = np.sqrt((featureValue - featureMeasurement) ** 2)
@@ -152,11 +162,28 @@ class FeatureSpace:
         mostProbableMood = [min(soundLevelRelation), soundLevelRelation.index(min(soundLevelRelation))]
         return mostProbableMood
 
+    def checkMostPowerfulFrequency(self, measurementsArray):
+        pwrHappy = self.getRelation(self.pwrFreqMean_happy, self.pwrFreqStd_happy, measurementsArray[4])
+        pwrSad = self.getRelation(self.pwrFreqMean_sad, self.pwrFreqStd_sad, measurementsArray[4])
+        pwrAngry = self.getRelation(self.pwrFreqMean_angry, self.pwrFreqStd_angry, measurementsArray[4])
+        pwrFear = self.getRelation(self.pwrFreqMean_fear, self.pwrFreqStd_fear, measurementsArray[4])
+
+        pwrFreqRelation = [pwrHappy, pwrSad, pwrAngry, pwrAngry, pwrFear]
+        print('---------------------------')
+        print("Power Level Happy:", pwrFreqRelation[0])
+        print("Power Level Sad:", pwrFreqRelation[1])
+        print("Power Level Angry:", pwrFreqRelation[2])
+        print("Power Level Fear:", pwrFreqRelation[3])
+        print("Power Level Tender:", pwrFreqRelation[4])
+        mostProbableMood = [min(pwrFreqRelation), pwrFreqRelation.index(min(pwrFreqRelation))]
+        return mostProbableMood
+
     def checkEmotion(self, measurementsArray):
         pitch = self.checkPitch(measurementsArray)
         pitchVariance = self.checkPitchVariance(measurementsArray)
         soundVariance = self.checkSoundVariance(measurementsArray)
         soundlvl = self.checkSound(measurementsArray)
+        pwrFreq = self.checkMostPowerfulFrequency(measurementsArray)
         print('---------------------------')
         print("CheckPitch:", pitch)
         print("CheckPitchVariance:", pitchVariance)
@@ -255,9 +282,31 @@ class FeatureSpace:
         else:
             print("Sound level not within any range")
 
+        if pwrFreq[1] == 0 and pwrFreq[0] < 1:
+            self.hValue += pwrFreq[0]
+            self.hScore += 1
+            print("hScore awarded from sound level")
+
+        elif pwrFreq[1] == 1 and pwrFreq[0] < 1:
+            self.sValue += pwrFreq[0]
+            self.sScore += 1
+            print("sScore awarded from sound level")
+
+        elif pwrFreq[1] == 2 and pwrFreq[0] < 1:
+            self.aValue += pwrFreq[0]
+            self.aScore += 1
+            print("aScore awarded from sound level")
+
+        elif pwrFreq[1] == 3 and pwrFreq[0] < 1:
+            self.fValue += pwrFreq[0]
+            self.fScore += 1
+            print("fScore awarded from sound level")
+
+        else:
+            print("Power frequency not within any range")
+
         theEmotionArray = [self.zeroDivision(self.hValue, self.hScore), self.zeroDivision(self.sValue, self.sScore),
-                           self.zeroDivision(self.aValue, self.aScore), self.zeroDivision(self.fValue, self.fScore),
-                           self.zeroDivision(self.tValue, self.tScore)]
+                           self.zeroDivision(self.aValue, self.aScore), self.zeroDivision(self.fValue, self.fScore)]
 
         if self.hScore > 1:
             theEmotionArray[0] = theEmotionArray[0] * 0.70
@@ -286,13 +335,6 @@ class FeatureSpace:
                 theEmotionArray[3] = theEmotionArray[3] * 0.70
                 if self.fScore > 3:
                     theEmotionArray[3] = theEmotionArray[3] * 0.50
-
-        if self.tScore > 1:
-            theEmotionArray[4] = theEmotionArray[4] * 0.70
-            if self.tScore > 2:
-                theEmotionArray[4] = theEmotionArray[4] * 0.70
-                if self.tScore > 3:
-                    theEmotionArray[4] = theEmotionArray[4] * 0.50
 
         print('---------------------------')
         print("hScore+:", self.hScore)
@@ -333,7 +375,6 @@ class FeatureSpace:
             self.prevState = 3
             self.resetMoodScores()
             return 3
-
 
 
         print("--------------------------------------------------------")

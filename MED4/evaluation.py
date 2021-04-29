@@ -31,7 +31,7 @@ class Evaluation:
                     else:
                         for i in range(len(tempArr)):
                             # print(str(i) + str(ii))
-                            emotionArr.append(tempArr[i])
+                            emotionArr = np.append(emotionArr, tempArr[i])
 
         return emotionArr
 
@@ -54,25 +54,34 @@ class Evaluation:
         print(y_train)
         print(y_test)
 
-        arr = [[[]for ii in range(4)] for i in range(len(emotions))]
+        arr = [[[0]for ii in range(5)] for i in range(len(emotions))]
+
+        arr = np.asarray(arr)
+        print(arr)
+        print(len(arr[int(y_train[0])]))
         for x in range(len(x_train)):
-            if len(arr[int(y_train[x])]) <= 0:
-                arr[int(y_train[x])].append(x_train[x])
+            if len(arr[int(y_train[x])]) <= 5:
+                arr[int(y_train[x])] = np.append(arr[int(y_train[x])], x_train[x])
             else:
-                for i in range(4):
-                    arr[int(y_train[x])][i].append(x_train[x][i])
+                for i in range(5):
+                    print(i)
+                    arr[int(y_train[x])][i] = np.append(arr[int(y_train[x])][i], x_train[x][i])
+
+        y_test = [1, 2, 3]
+        y = y_test[0]  # y = 1
+        print(y[0])  # this line will fail
 
         print(arr)
         print(len(arr))
 
         f = open("featurespacevariables.txt", "w")
         f.write(str(emotions)+"\n")
-        f.write("Pitch, Sound Level, Pitch Variance, Sound Level Variance\n")
+        f.write("Pitch, Sound Level, Pitch Variance, Sound Level Variance, Power Frequency\n")
 
         for x in range(len(arr)):
-            featureSpace = [np.mean(arr[x][0]), np.mean(arr[x][1]), np.mean(arr[x][2]), np.mean(arr[x][3])]
+            featureSpace = [np.mean(arr[x][0]), np.mean(arr[x][1]), np.mean(arr[x][2]), np.mean(arr[x][3]), np.mean(arr[x][4])]
             print("Feature Mean: " + str(featureSpace))
-            featureSTD = [np.std(arr[x][0]), np.std(arr[x][1]), np.std(arr[x][2]), np.std(arr[x][3])]
+            featureSTD = [np.std(arr[x][0]), np.std(arr[x][1]), np.std(arr[x][2]), np.std(arr[x][3]), np.mean(arr[x][3])]
             print("Feature STD: " + str(featureSTD))
             f.write(str(featureSpace) + "\n")
             f.write(str(featureSTD) + "\n")
@@ -112,7 +121,7 @@ class Evaluation:
 
 e = Evaluation()
 emotions = ["Angry", "Fear", "Happiness", "Sad"]
-e.makeDataset()
+e.makeDataset(emotions)
 
 conMatrixArr = []
 

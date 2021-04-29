@@ -77,10 +77,10 @@ class FeatureExtraction:
                     #print("ikke lyd")
                     if voiceCounter > 3:
 
-                        pitch, dB, pitchVar, dBVar = self.get_features_from_arrays(pitchArr, decibelArr)
+                        pitch, dB, pitchVar, dBVar, pFreq = self.get_features_from_arrays(pitchArr, decibelArr, data)
                         self.fe.setFeatureSpaces()
-                        emotion = self.fe.checkEmotion([pitch,pitchVar,dBVar,dB])
-                        print("Feature values (P, dB, PV, dBV):", pitch, dB, pitchVar, dBVar)
+                        emotion = self.fe.checkEmotion([pitch,pitchVar,dBVar,dB, pFreq])
+                        print("Feature values (P, dB, PV, dBV, powFreq):", pitch, dB, pitchVar, dBVar, pFreq)
 
 
                         #ser.write(f"{emotion}".encode()) comment in when arduino is in use
@@ -91,12 +91,38 @@ class FeatureExtraction:
                     voiceCounter = 0
                     noiseCounter = 0
 
-    def get_features_from_arrays(self, arrP, arrSL):
+    def get_features_from_arrays(self, arrP, arrSL, rawData):
         pitch = np.mean(arrP)
         dB = np.mean(arrSL)
         pitchVar = np.std(arrP)
         dBVar = np.std(arrSL)
-        return pitch, dB, pitchVar, dBVar
+
+        datacut = rawData[:, 0]
+
+        powerFreq = self.mostPowerfulFrequency(datacut, self.RATE)
+        return pitch, dB, pitchVar, dBVar, powerFreq
+
+    def mostPowerfulFrequency(self, data1, samplerate1):
+        data, samplerate = data1, samplerate1
+        length = len(data) / samplerate
+        time = np.linspace(0., length,
+                           len(data))  # list the size of samplesize with 1 sample-time length per iteration
+        f = data  # Signal
+        dt = time[4] - time[3]  ##Iteration length variable
+        n = len(time)  ##Amount of samples
+        fhat = np.fft.fft(f, n)  ### Fourier transformed signal
+        PSD = fhat * np.conj(fhat) / n  ## Computing power spectrum of the signal
+        freq = (1 / (dt * n) * np.arange(n))  ## Making freqeuncies for x-axis
+        L = np.arange(1, np.floor(n / 2),
+                      dtype="int")  ## Only plot the first half of freqs, this seperates the second half
+        indices = PSD > max(PSD) * 0.3  # Find all freqs with large power
+        PSDclean = PSD * indices  # Zero out all others
+
+        maxV = max(PSDclean[:int(len(PSDclean) / 2)])
+        index = np.where(PSDclean == maxV)
+        pwrFreq = min(freq[index])
+        print("pwrFreq: ", pwrFreq)
+        return pwrFreq
 
     def get_features_from_segment(self, data):
         rms = audioop.rms(data, 2)  # Root Mean Square to get volume
@@ -110,7 +136,6 @@ class FeatureExtraction:
 
     def get_features_from_clip(self, soundDirectory, fileName):
         print("Starting getting features from " + fileName)
-        pitch, dB, pitchVar, dBVar = [],[],[],[]
 
         voiceCounter = 0
         pitchArr = np.array([])
@@ -129,9 +154,7 @@ class FeatureExtraction:
             else:
                 newArr.append(data[x * chunk:len(data) - 1])
 
-        #print(len(newArr))
-
-        features = []
+        features = np.array([])
 
         # create a numpy array holding a single read of audio data
         for i in range(len(newArr)):  # to it a few times just to see
@@ -146,17 +169,13 @@ class FeatureExtraction:
                 noiseCounter += 1
                 if noiseCounter > 3:
                     if voiceCounter > 3:
-                        p, s, pVar, sVar = self.get_features_from_arrays(pitchArr, decibelArr)
+                        p, s, pVar, sVar, pFreq = self.get_features_from_arrays(pitchArr, decibelArr, data)
 
-                        pitch.append(p)
-                        dB.append(s)
-                        pitchVar.append(pVar)
-                        dBVar.append(sVar)
-
-                        features.append([p, s, pVar, sVar])
+                        features = np.append(features, [p, s, pVar, sVar, pFreq])
 
                     pitchArr = np.array([])
                     decibelArr = np.array([])
+
                     voiceCounter = 0
                     noiseCounter = 0
         return features

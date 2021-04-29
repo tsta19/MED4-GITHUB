@@ -9,7 +9,6 @@ import serial
 from scipy.io import wavfile
 from FeatureSpace import FeatureSpace
 
-
 class FeatureExtraction:
 
     def __init__(self):
@@ -53,7 +52,7 @@ class FeatureExtraction:
         pitchArr = np.array([])
         decibelArr = np.array([])
         noiseCounter = 0
-        dBArr = np.array([])
+        #dBArr = np.array([])
         p = pyaudio.PyAudio()  # start the PyAudio class
         stream = p.open(format=pyaudio.paInt16, channels=1, rate=self.RATE, input=True,
                         frames_per_buffer=self.CHUNK)  # uses default input device
@@ -62,9 +61,9 @@ class FeatureExtraction:
             data = np.frombuffer(stream.read(self.CHUNK), dtype=np.int16)
             decibel, pi = self.get_features_from_segment(data)
             
-            dBArr = np.append(dBArr, decibel)
-            with open("fakintextfile.txt", "w") as file:
-                file.write(str(dBArr))
+            # dBArr = np.append(dBArr, decibel)
+            # with open("fakintextfile.txt", "w") as file:
+            #     file.write(str(dBArr))
 
             if decibel > 59:
                 #print('The estimated pitch is {0:.2f} Hz.'.format(pi))
@@ -79,6 +78,7 @@ class FeatureExtraction:
                     if voiceCounter > 3:
 
                         pitch, dB, pitchVar, dBVar = self.get_features_from_arrays(pitchArr, decibelArr)
+                        self.fe.setFeatureSpaces()
                         emotion = self.fe.checkEmotion([pitch,pitchVar,dBVar,dB])
                         print("Feature values (P, dB, PV, dBV):", pitch, dB, pitchVar, dBVar)
 
@@ -161,5 +161,5 @@ class FeatureExtraction:
                     noiseCounter = 0
         return features
 
-#f = FeatureExtraction()
-#f.get_features_live()
+f = FeatureExtraction()
+f.get_features_live()

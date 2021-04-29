@@ -80,9 +80,9 @@ def getFreqDistribution(data):
 
 def mostPowerfulFrequency(data1, samplerate1):
     data, samplerate = data1, samplerate1
-    length = data.shape[0] / samplerate
+    length = len(data) / samplerate
     time = np.linspace(0., length,
-                       data.shape[0])  # list the size of samplesize with 1 sample-time length per iteration
+                       len(data))  # list the size of samplesize with 1 sample-time length per iteration
     f = data  # Signal
     dt = time[4] - time[3]  ##Iteration length variable
     n = len(time)  ##Amount of samples
@@ -103,7 +103,20 @@ def mostPowerfulFrequency(data1, samplerate1):
 
 
 if __name__ == "__main__":
-    pass
+    samplerate, data = wavfile.read("Sound_Files/Emotions/Angry/Angry1.wav")
+    print(np.shape(data))
+
+    datacut = []
+
+    for i in range(int(len(data))):
+        datacut.append(data[i][0])
+    print(len(datacut))
+
+    mostPowerfulFrequency(datacut, samplerate)
+
+
+
+
     # wav_fname = "detteerentest.wav"
     # data, samplerate = lbs.load(wav_fname)
     #

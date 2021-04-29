@@ -137,7 +137,7 @@ class FeatureExtraction:
         for i in range(len(newArr)):  # to it a few times just to see
             decibel, p = self.get_features_from_segment(newArr[i])
 
-            if 59 < decibel:
+            if 59 < decibel and p < 300:
                 voiceCounter += 1
                 pitchArr = np.append(pitchArr, p)
                 decibelArr = np.append(decibelArr, decibel)
@@ -161,5 +161,5 @@ class FeatureExtraction:
                     noiseCounter = 0
         return features
 
-f = FeatureExtraction()
-f.get_features_live()
+#f = FeatureExtraction()
+#f.get_features_live()

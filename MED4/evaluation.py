@@ -112,20 +112,27 @@ class Evaluation:
 
 e = Evaluation()
 emotions = ["Angry", "Fear", "Happiness", "Sad"]
-e.makeDataset(emotions)
+e.makeDataset()
 
 conMatrixArr = []
 
-for x in range(10):
+iterations = 100
+
+for x in range(iterations):
     x_test, y_test = e.train(emotions)
     conMatrixArr.append(e.test(x_test, y_test))
 
 print("------------------------------")
 print()
-for x in range(10):
-    accuracy = accuracy_score(conMatrixArr[x][0], conMatrixArr[x][1])
-    print("Accuracy: " + str(accuracy))
+
+accuracy = np.array([])
+
+for x in range(iterations):
+    accuracy = np.append(accuracy, accuracy_score(conMatrixArr[x][0], conMatrixArr[x][1]))
+    print("Accuracy: " + str(accuracy[x]))
     print("Confusion Matrix:")
     print(confusion_matrix(conMatrixArr[x][0], conMatrixArr[x][1]))
     print()
+
+print("Mean Accuracy: " + str(np.mean(accuracy)))
 

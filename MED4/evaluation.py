@@ -54,22 +54,19 @@ class Evaluation:
         print(y_train)
         print(y_test)
 
-        arr = [[[0]for ii in range(5)] for i in range(len(emotions))]
+        arr = [[0for ii in range(5)] for i in range(len(emotions))]
+        print(x_train)
 
         arr = np.asarray(arr)
         print(arr)
         print(len(arr[int(y_train[0])]))
         for x in range(len(x_train)):
             if len(arr[int(y_train[x])]) <= 5:
-                arr[int(y_train[x])] = np.append(arr[int(y_train[x])], x_train[x])
+                arr[int(y_train[x])] = x_train[x]
             else:
                 for i in range(5):
                     print(i)
                     arr[int(y_train[x])][i] = np.append(arr[int(y_train[x])][i], x_train[x][i])
-
-        y_test = [1, 2, 3]
-        y = y_test[0]  # y = 1
-        print(y[0])  # this line will fail
 
         print(arr)
         print(len(arr))

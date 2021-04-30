@@ -179,6 +179,7 @@ class FeatureSpace:
         return mostProbableMood
 
     def checkEmotion(self, measurementsArray):
+        print("measurements: " + str(measurementsArray))
         pitch = self.checkPitch(measurementsArray)
         pitchVariance = self.checkPitchVariance(measurementsArray)
         soundVariance = self.checkSoundVariance(measurementsArray)

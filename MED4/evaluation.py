@@ -113,6 +113,7 @@ class Evaluation:
                 print("error with [" + str(testX[i]) + "][" + str(testY[i]) + "]")
 
 
+
 e = Evaluation()
 emotions = ["Angry", "Fear", "Happiness", "Sad"]
 e.makeDataset(emotions)
@@ -123,14 +124,26 @@ iterations = 100
 
 for x in range(iterations):
     x_test, y_test = e.train(emotions)
-    conMatrixArr.append(e.test(x_test, y_test))
+
+    checkList = [0, 1, 2, 3]
+
+    counter = 0
+    for y in range(len(checkList)):
+
+        if checkList[y] in y_test:
+            counter += 1
+
+    if counter > len(checkList)-1:
+        conMatrixArr.append(e.test(x_test, y_test))
 
 print("------------------------------")
 print()
 
+print(len(conMatrixArr))
+
 accuracy = np.array([])
 
-for x in range(iterations):
+for x in range(len(conMatrixArr)):
     accuracy = np.append(accuracy, accuracy_score(conMatrixArr[x][0], conMatrixArr[x][1]))
     print("Accuracy: " + str(accuracy[x]))
     print("Confusion Matrix:")

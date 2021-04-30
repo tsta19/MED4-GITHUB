@@ -154,7 +154,7 @@ class FeatureExtraction:
             else:
                 newArr.append(data[x * chunk:len(data) - 1])
 
-        features = np.array([])
+        features = np.array([[]])
 
         # create a numpy array holding a single read of audio data
         for i in range(len(newArr)):  # to it a few times just to see
@@ -170,14 +170,17 @@ class FeatureExtraction:
                 if noiseCounter > 3:
                     if voiceCounter > 3:
                         p, s, pVar, sVar, pFreq = self.get_features_from_arrays(pitchArr, decibelArr, data)
-
-                        features = np.append(features, [p, s, pVar, sVar, pFreq])
+                        if len(features) <= 1:
+                            features = [p, s, pVar, sVar, pFreq]
+                        else:
+                            features = np.vstack((features, [p, s, pVar, sVar, pFreq]))
 
                     pitchArr = np.array([])
                     decibelArr = np.array([])
 
                     voiceCounter = 0
                     noiseCounter = 0
+
         return features
 
 #f = FeatureExtraction()

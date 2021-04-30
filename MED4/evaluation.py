@@ -24,24 +24,26 @@ class Evaluation:
         for filename in os.listdir(folder):
             if filename is not None:
                 tempArr = self.fe.get_features_from_clip(folder, filename)
-                print(tempArr)
+                print("tempArr: " + str(tempArr))
                 if len(tempArr) != 0:
                     if len(emotionArr) == 0:
                         emotionArr = tempArr
                     else:
-                        for i in range(len(tempArr)):
-                            # print(str(i) + str(ii))
-                            emotionArr = np.append(emotionArr, tempArr[i])
-
+                        emotionArr = np.vstack((emotionArr, tempArr))
+                        # i in range(len(tempArr)):
+                            #emotionArr = np.vstack(tempArr[i])
         return emotionArr
 
     def makeDataset(self, emotions):
-        self.featuresX = []
+        self.featuresX = np.array([])
         self.featuresY = np.array([])
         for i in range(len(emotions)):
             features = self.ExtractSoundFiles(emotions[i])
             for x in range(len(features)):
-                self.featuresX.append(features[x])
+                if len(self.featuresX) <= 1:
+                    self.featuresX = features[x]
+                else:
+                    self.featuresX = np.vstack((self.featuresX, features[x]))
             self.featuresY = np.append(self.featuresY, np.array([i for x in range(len(features))]))
 
     def train(self, emotions):
@@ -55,11 +57,8 @@ class Evaluation:
         print(y_test)
 
         arr = [[0for ii in range(5)] for i in range(len(emotions))]
-        print(x_train)
 
         arr = np.asarray(arr)
-        print(arr)
-        print(len(arr[int(y_train[0])]))
         for x in range(len(x_train)):
             if len(arr[int(y_train[x])]) <= 5:
                 arr[int(y_train[x])] = x_train[x]
@@ -67,9 +66,6 @@ class Evaluation:
                 for i in range(5):
                     print(i)
                     arr[int(y_train[x])][i] = np.append(arr[int(y_train[x])][i], x_train[x][i])
-
-        print(arr)
-        print(len(arr))
 
         f = open("featurespacevariables.txt", "w")
         f.write(str(emotions)+"\n")
@@ -91,6 +87,7 @@ class Evaluation:
 
     def test(self, xtest, ytest):
         predictResult = np.array([])
+        print(xtest)
         for x in range(len(xtest)):
             predictResult = np.append(predictResult, self.fs.checkEmotion(xtest[x]))
 

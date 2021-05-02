@@ -112,7 +112,7 @@ class FeatureSpace:
         return mostProbableMood
 
     def checkPitchVariance(self, measurementsArray):
-        index = 1 + self.minusCounter
+        index = 2 + self.minusCounter
         pvHappy = self.getRelation(self.pitchVariMean_happy, self.pitchVariStd_happy, measurementsArray[index])
         pvSad = self.getRelation(self.pitchVariMean_sad, self.pitchVariStd_sad, measurementsArray[index])
         pvAngry = self.getRelation(self.pitchVariMean_angry, self.pitchVariStd_angry, measurementsArray[index])
@@ -129,7 +129,7 @@ class FeatureSpace:
         return mostProbableMood
 
     def checkSoundVariance(self, measurementsArray):
-        index = 2 + self.minusCounter
+        index = 3 + self.minusCounter
         svHappy = self.getRelation(self.soundVariMean_happy, self.soundVariStd_happy, measurementsArray[index])
         svSad = self.getRelation(self.soundVariMean_sad, self.soundVariStd_sad, measurementsArray[index])
         svAngry = self.getRelation(self.soundVariMean_angry, self.soundVariStd_angry, measurementsArray[index])
@@ -153,7 +153,7 @@ class FeatureSpace:
         self.tScore, self.tValue = 0, 0
 
     def checkSound(self, measurementsArray):
-        index = 3 + self.minusCounter
+        index = 1 + self.minusCounter
         sHappy = self.getRelation(self.soundlvlMean_happy, self.soundlvlStd_happy, measurementsArray[index])
         sSad = self.getRelation(self.soundlvlMean_sad, self.soundlvlStd_sad, measurementsArray[index])
         sAngry = self.getRelation(self.soundlvlMean_angry, self.soundlvlStd_angry, measurementsArray[index])

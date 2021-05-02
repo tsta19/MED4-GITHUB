@@ -7,6 +7,8 @@ from sklearn.metrics import accuracy_score
 from sklearn.metrics import confusion_matrix
 from sklearn.metrics import plot_confusion_matrix
 from sklearn.model_selection import cross_val_score
+from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay, accuracy_score, precision_score, recall_score, \
+    f1_score
 import numpy as np
 import cv2
 import os
@@ -116,51 +118,8 @@ class Evaluation:
 
         print("Accuracy: " + str(accuracy))
         print("Confusion Matrix:")
-        print(confusion_matrix(y_test, predictResult))
+        print(confusion_matrix(ytest, predictResult))
 
-        return [y_test, predictResult]
+        return [ytest, predictResult]
 
-
-methods = [False, True, True, True, True]
-
-e = Evaluation()
-
-methodNames = ["Pitch", "Sound Level", "Pitch Variance", "Sound Level Variance", "Power Frequency"]
-
-emotions = ["Angry", "Fear", "Happiness", "Sad"]
-e.makeDataset(emotions)
-
-conMatrixArr = []
-
-iterations = 100
-
-for x in range(iterations):
-    x_test, y_test = e.train(emotions, methods)
-
-    checkList = []
-
-    counter = 0
-    for y in range(len(checkList)):
-
-        if checkList[y] in y_test:
-            counter += 1
-
-    if counter > len(checkList)-1:
-        conMatrixArr.append(e.test(x_test, y_test))
-
-print("------------------------------")
-print()
-
-print(len(conMatrixArr))
-
-accuracy = np.array([])
-
-for x in range(len(conMatrixArr)):
-    accuracy = np.append(accuracy, accuracy_score(conMatrixArr[x][0], conMatrixArr[x][1]))
-    print("Accuracy: " + str(accuracy[x]))
-    print("Confusion Matrix:")
-    print(confusion_matrix(conMatrixArr[x][0], conMatrixArr[x][1]))
-    print()
-
-print("Mean Accuracy: " + str(np.mean(accuracy)))
 

@@ -44,40 +44,61 @@ class Evaluation:
                     self.featuresX = features[x]
                 else:
                     self.featuresX = np.vstack((self.featuresX, features[x]))
+                print(self.featuresX)
             self.featuresY = np.append(self.featuresY, np.array([i for x in range(len(features))]))
 
-    def train(self, emotions):
+        print()
+        print("dataset made")
+
+    def train(self, emotions, methods):
+        self.fs.setMethods(methods)
+        
         print(self.featuresX)
         print(len(self.featuresX))
         print(self.featuresY)
-        x_train, x_test, y_train, y_test = model_selection.train_test_split(self.featuresX, self.featuresY, test_size=0.2)
+
+        for i in enumerate(self.featuresX[0]):
+            print(i)
+
+        #featuresX = [x for x in self.featuresX[] if methods[x] is True]
+        #featuresX = [[y for y in self.featuresX[x] if methods[self.featuresX.index(y)] is True]for x in range(len(self.featuresX))]
+        featuresX = [[i for e, i in enumerate(self.featuresX[x]) if methods[e] is True]for x in range(len(self.featuresX))]
+        print(featuresX)
+        print("featureX: " + str(featuresX))
+
+        x_train, x_test, y_train, y_test = model_selection.train_test_split(featuresX, self.featuresY, test_size=0.2)
         print(x_train)
         print(x_test)
         print(y_train)
         print(y_test)
 
-        arr = [[0for ii in range(5)] for i in range(len(emotions))]
+        numOfMethods = np.count_nonzero(methods)
+        print(numOfMethods)
 
-        arr = np.asarray(arr)
+        arr = [[[] for x in range(numOfMethods)] for i in range(len(emotions))]
+        print("arrrrrrr" + str(arr))
+
         for x in range(len(x_train)):
-            if len(arr[int(y_train[x])]) <= 5:
-                arr[int(y_train[x])] = x_train[x]
-            else:
-                for i in range(5):
-                    print(i)
-                    arr[int(y_train[x])][i] = np.append(arr[int(y_train[x])][i], x_train[x][i])
+            for y in range(numOfMethods):
+                arr[int(y_train[x])][y].append(x_train[x][y])
+            print(arr)
 
         f = open("featurespacevariables.txt", "w")
         f.write(str(emotions)+"\n")
         f.write("Pitch, Sound Level, Pitch Variance, Sound Level Variance, Power Frequency\n")
-
+        print(arr)
         for x in range(len(arr)):
-            featureSpace = [np.mean(arr[x][0]), np.mean(arr[x][1]), np.mean(arr[x][2]), np.mean(arr[x][3]), np.mean(arr[x][4])]
+            featureSpace = np.array([])
+            featureSTD = np.array([])
+            for i in range(numOfMethods):
+                print(arr[x][i])
+                featureSpace = np.append(featureSpace, np.mean(arr[x][i]))
+                featureSTD = np.append(featureSTD, np.std(arr[x][i]))
+
             print("Feature Mean: " + str(featureSpace))
-            featureSTD = [np.std(arr[x][0]), np.std(arr[x][1]), np.std(arr[x][2]), np.std(arr[x][3]), np.mean(arr[x][3])]
             print("Feature STD: " + str(featureSTD))
-            f.write(str(featureSpace) + "\n")
-            f.write(str(featureSTD) + "\n")
+            f.write(str(featureSpace.tolist()) + "\n")
+            f.write(str(featureSTD.tolist()) + "\n")
 
         f.close()
 
@@ -100,21 +121,12 @@ class Evaluation:
         return [y_test, predictResult]
 
 
-    # Funktion som returnerer en string an på hvilket 'target' det har.
-    def target_type(self, row):
-        if row['Target'] == 1:
-            return 'Voice'
-        else:
-            return 'Noise'
-
-    def find_errors(self, testY, predictions, testX):
-        for i in range(len(testY)):
-            if testY[i] != predictions[i]:
-                print("error with [" + str(testX[i]) + "][" + str(testY[i]) + "]")
-
-
+methods = [False, True, True, True, True]
 
 e = Evaluation()
+
+methodNames = ["Pitch", "Sound Level", "Pitch Variance", "Sound Level Variance", "Power Frequency"]
+
 emotions = ["Angry", "Fear", "Happiness", "Sad"]
 e.makeDataset(emotions)
 
@@ -123,9 +135,9 @@ conMatrixArr = []
 iterations = 100
 
 for x in range(iterations):
-    x_test, y_test = e.train(emotions)
+    x_test, y_test = e.train(emotions, methods)
 
-    checkList = [0, 1, 2, 3]
+    checkList = []
 
     counter = 0
     for y in range(len(checkList)):

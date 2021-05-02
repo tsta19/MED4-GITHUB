@@ -12,6 +12,9 @@ class FeatureSpace:
 
     featuresNum = 5
 
+    def setMethods(self, methods):
+        self.methods = methods
+
     def setFeatureSpaces(self):
         print("Getting imput from list")
 
@@ -31,50 +34,51 @@ class FeatureSpace:
         print(features)
         print("Done getting input from list")
 
-        self.pitchMean_happy = features[4][0]
-        self.pitchStd_happy = features[5][0]
-        self.pitchMean_sad = features[6][0]
-        self.pitchStd_sad = features[7][0]
-        self.pitchMean_angry = features[0][0]
-        self.pitchStd_angry = features[1][0]
-        self.pitchMean_fear = features[2][0]
-        self.pitchStd_fear = features[3][0]
-
-        self.pitchVariMean_happy = features[4][2]
-        self.pitchVariStd_happy = features[5][2]
-        self.pitchVariMean_sad = features[6][2]
-        self.pitchVariStd_sad = features[7][2]
-        self.pitchVariMean_angry = features[0][2]
-        self.pitchVariStd_angry = features[1][2]
-        self.pitchVariMean_fear = features[2][2]
-        self.pitchVariStd_fear = features[3][2]
-
-        self.soundVariMean_happy = features[4][3]
-        self.soundVariStd_happy = features[5][3]
-        self.soundVariMean_sad = features[6][3]
-        self.soundVariStd_sad = features[7][3]
-        self.soundVariMean_angry = features[0][3]
-        self.soundVariStd_angry = features[1][3]
-        self.soundVariMean_fear = features[2][3]
-        self.soundVariStd_fear = features[3][3]
-
-        self.soundlvlMean_happy = features[4][1]
-        self.soundlvlStd_happy = features[5][1]
-        self.soundlvlMean_sad = features[6][1]
-        self.soundlvlStd_sad = features[7][1]
-        self.soundlvlMean_angry = features[0][1]
-        self.soundlvlStd_angry = features[1][1]
-        self.soundlvlMean_fear = features[2][1]
-        self.soundlvlStd_fear = features[3][1]
-
-        self.pwrFreqMean_happy = features[4][4]
-        self.pwrFreqStd_happy = features[5][4]
-        self.pwrFreqMean_sad = features[6][4]
-        self.pwrFreqStd_sad = features[7][4]
-        self.pwrFreqMean_angry = features[0][4]
-        self.pwrFreqStd_angry = features[1][4]
-        self.pwrFreqMean_fear = features[2][4]
-        self.pwrFreqStd_fear = features[3][4]
+        if self.methods[0]:
+            self.pitchMean_happy = features[4][0]
+            self.pitchStd_happy = features[5][0]
+            self.pitchMean_sad = features[6][0]
+            self.pitchStd_sad = features[7][0]
+            self.pitchMean_angry = features[0][0]
+            self.pitchStd_angry = features[1][0]
+            self.pitchMean_fear = features[2][0]
+            self.pitchStd_fear = features[3][0]
+        if self.methods[2]:
+            self.pitchVariMean_happy = features[4][2]
+            self.pitchVariStd_happy = features[5][2]
+            self.pitchVariMean_sad = features[6][2]
+            self.pitchVariStd_sad = features[7][2]
+            self.pitchVariMean_angry = features[0][2]
+            self.pitchVariStd_angry = features[1][2]
+            self.pitchVariMean_fear = features[2][2]
+            self.pitchVariStd_fear = features[3][2]
+        if self.methods[3]:
+            self.soundVariMean_happy = features[4][3]
+            self.soundVariStd_happy = features[5][3]
+            self.soundVariMean_sad = features[6][3]
+            self.soundVariStd_sad = features[7][3]
+            self.soundVariMean_angry = features[0][3]
+            self.soundVariStd_angry = features[1][3]
+            self.soundVariMean_fear = features[2][3]
+            self.soundVariStd_fear = features[3][3]
+        if self.methods[1]:
+            self.soundlvlMean_happy = features[4][1]
+            self.soundlvlStd_happy = features[5][1]
+            self.soundlvlMean_sad = features[6][1]
+            self.soundlvlStd_sad = features[7][1]
+            self.soundlvlMean_angry = features[0][1]
+            self.soundlvlStd_angry = features[1][1]
+            self.soundlvlMean_fear = features[2][1]
+            self.soundlvlStd_fear = features[3][1]
+        if self.methods[4]:
+            self.pwrFreqMean_happy = features[4][4]
+            self.pwrFreqStd_happy = features[5][4]
+            self.pwrFreqMean_sad = features[6][4]
+            self.pwrFreqStd_sad = features[7][4]
+            self.pwrFreqMean_angry = features[0][4]
+            self.pwrFreqStd_angry = features[1][4]
+            self.pwrFreqMean_fear = features[2][4]
+            self.pwrFreqStd_fear = features[3][4]
 
         # measurementsArray = [pitchlvl, pitchVari, soundVari, soundlvl, powerFreq]
 
@@ -108,10 +112,11 @@ class FeatureSpace:
         return mostProbableMood
 
     def checkPitchVariance(self, measurementsArray):
-        pvHappy = self.getRelation(self.pitchVariMean_happy, self.pitchVariStd_happy, measurementsArray[1])
-        pvSad = self.getRelation(self.pitchVariMean_sad, self.pitchVariStd_sad, measurementsArray[1])
-        pvAngry = self.getRelation(self.pitchVariMean_angry, self.pitchVariStd_angry, measurementsArray[1])
-        pvFear = self.getRelation(self.pitchVariMean_sad, self.pitchVariStd_fear, measurementsArray[1])
+        index = 1 + self.minusCounter
+        pvHappy = self.getRelation(self.pitchVariMean_happy, self.pitchVariStd_happy, measurementsArray[index])
+        pvSad = self.getRelation(self.pitchVariMean_sad, self.pitchVariStd_sad, measurementsArray[index])
+        pvAngry = self.getRelation(self.pitchVariMean_angry, self.pitchVariStd_angry, measurementsArray[index])
+        pvFear = self.getRelation(self.pitchVariMean_sad, self.pitchVariStd_fear, measurementsArray[index])
 
         pitchVarianceRelations = [pvHappy, pvSad, pvAngry, pvFear]
         print('---------------------------')
@@ -124,10 +129,11 @@ class FeatureSpace:
         return mostProbableMood
 
     def checkSoundVariance(self, measurementsArray):
-        svHappy = self.getRelation(self.soundVariMean_happy, self.soundVariStd_happy, measurementsArray[2])
-        svSad = self.getRelation(self.soundVariMean_sad, self.soundVariStd_sad, measurementsArray[2])
-        svAngry = self.getRelation(self.soundVariMean_angry, self.soundVariStd_angry, measurementsArray[2])
-        svFear = self.getRelation(self.soundVariMean_fear, self.soundVariStd_fear, measurementsArray[2])
+        index = 2 + self.minusCounter
+        svHappy = self.getRelation(self.soundVariMean_happy, self.soundVariStd_happy, measurementsArray[index])
+        svSad = self.getRelation(self.soundVariMean_sad, self.soundVariStd_sad, measurementsArray[index])
+        svAngry = self.getRelation(self.soundVariMean_angry, self.soundVariStd_angry, measurementsArray[index])
+        svFear = self.getRelation(self.soundVariMean_fear, self.soundVariStd_fear, measurementsArray[index])
 
         soundVarianceRelation = [svHappy, svSad, svAngry, svFear]
         print('---------------------------')
@@ -147,10 +153,11 @@ class FeatureSpace:
         self.tScore, self.tValue = 0, 0
 
     def checkSound(self, measurementsArray):
-        sHappy = self.getRelation(self.soundlvlMean_happy, self.soundlvlStd_happy, measurementsArray[3])
-        sSad = self.getRelation(self.soundlvlMean_sad, self.soundlvlStd_sad, measurementsArray[3])
-        sAngry = self.getRelation(self.soundlvlMean_angry, self.soundlvlStd_angry, measurementsArray[3])
-        sFear = self.getRelation(self.soundlvlMean_fear, self.soundlvlStd_fear, measurementsArray[3])
+        index = 3 + self.minusCounter
+        sHappy = self.getRelation(self.soundlvlMean_happy, self.soundlvlStd_happy, measurementsArray[index])
+        sSad = self.getRelation(self.soundlvlMean_sad, self.soundlvlStd_sad, measurementsArray[index])
+        sAngry = self.getRelation(self.soundlvlMean_angry, self.soundlvlStd_angry, measurementsArray[index])
+        sFear = self.getRelation(self.soundlvlMean_fear, self.soundlvlStd_fear, measurementsArray[index])
 
         soundLevelRelation = [sHappy, sSad, sAngry, sFear]
         print('---------------------------')
@@ -163,10 +170,11 @@ class FeatureSpace:
         return mostProbableMood
 
     def checkMostPowerfulFrequency(self, measurementsArray):
-        pwrHappy = self.getRelation(self.pwrFreqMean_happy, self.pwrFreqStd_happy, measurementsArray[4])
-        pwrSad = self.getRelation(self.pwrFreqMean_sad, self.pwrFreqStd_sad, measurementsArray[4])
-        pwrAngry = self.getRelation(self.pwrFreqMean_angry, self.pwrFreqStd_angry, measurementsArray[4])
-        pwrFear = self.getRelation(self.pwrFreqMean_fear, self.pwrFreqStd_fear, measurementsArray[4])
+        index = 4 + self.minusCounter
+        pwrHappy = self.getRelation(self.pwrFreqMean_happy, self.pwrFreqStd_happy, measurementsArray[index])
+        pwrSad = self.getRelation(self.pwrFreqMean_sad, self.pwrFreqStd_sad, measurementsArray[index])
+        pwrAngry = self.getRelation(self.pwrFreqMean_angry, self.pwrFreqStd_angry, measurementsArray[index])
+        pwrFear = self.getRelation(self.pwrFreqMean_fear, self.pwrFreqStd_fear, measurementsArray[index])
 
         pwrFreqRelation = [pwrHappy, pwrSad, pwrAngry, pwrAngry, pwrFear]
         print('---------------------------')
@@ -174,137 +182,158 @@ class FeatureSpace:
         print("Power Level Sad:", pwrFreqRelation[1])
         print("Power Level Angry:", pwrFreqRelation[2])
         print("Power Level Fear:", pwrFreqRelation[3])
-        print("Power Level Tender:", pwrFreqRelation[4])
         mostProbableMood = [min(pwrFreqRelation), pwrFreqRelation.index(min(pwrFreqRelation))]
         return mostProbableMood
 
     def checkEmotion(self, measurementsArray):
         print("measurements: " + str(measurementsArray))
-        pitch = self.checkPitch(measurementsArray)
-        pitchVariance = self.checkPitchVariance(measurementsArray)
-        soundVariance = self.checkSoundVariance(measurementsArray)
-        soundlvl = self.checkSound(measurementsArray)
-        pwrFreq = self.checkMostPowerfulFrequency(measurementsArray)
-        print('---------------------------')
-        print("CheckPitch:", pitch)
-        print("CheckPitchVariance:", pitchVariance)
-        print("CheckSoundVariance:", soundVariance)
-        print("CheckSound:", soundlvl)
+        #print('---------------------------')
+        #print("CheckPitch: ", pitch)
+        #print("CheckPitchVariance: ", pitchVariance)
+        #print("CheckSoundVariance: ", soundVariance)
+        #print("CheckSound: ", soundlvl)
+        #print("CheckPowerFrequency: ", pwrFreq)
 
-        if pitch[1] == 0 and pitch[0] < 1:
-            self.hValue += pitch[0]
-            self.hScore += 1
-            print("hScore awarded from pitch level")
+        self.minusCounter = 0
 
-        elif pitch[1] == 1 and pitch[0] < 1:
-            self.sValue += pitch[0]
-            self.sScore += 1
-            print("sScore awarded from pitch level")
+        if self.methods[0]:
+            pitch = self.checkPitch(measurementsArray)
 
-        elif pitch[1] == 2 and pitch[0] < 1:
-            self.aValue += pitch[0]
-            self.aScore += 1
-            print("aScore awarded from pitch level")
+            if pitch[1] == 0 and pitch[0] < 1:
+                self.hValue += pitch[0]
+                self.hScore += 1
+                print("hScore awarded from pitch level")
 
-        elif pitch[1] == 3 and pitch[0] < 1:
-            self.fValue += pitch[0]
-            self.fScore += 1
-            print("fScore awarded from pitch level")
+            elif pitch[1] == 1 and pitch[0] < 1:
+                self.sValue += pitch[0]
+                self.sScore += 1
+                print("sScore awarded from pitch level")
 
+            elif pitch[1] == 2 and pitch[0] < 1:
+                self.aValue += pitch[0]
+                self.aScore += 1
+                print("aScore awarded from pitch level")
+
+            elif pitch[1] == 3 and pitch[0] < 1:
+                self.fValue += pitch[0]
+                self.fScore += 1
+                print("fScore awarded from pitch level")
+
+            else:
+                print("Pitch not within any range")
         else:
-            print("Pitch not within any range")
+            self.minusCounter -= 1
 
-        if pitchVariance[1] == 0 and pitchVariance[0] < 1:
-            self.hValue += pitchVariance[0]
-            self.hScore += 1
-            print("hScore awarded from pitch variance")
+        if self.methods[1]:
+            soundlvl = self.checkSound(measurementsArray)
 
-        elif pitchVariance[1] == 1 and pitchVariance[0] < 1:
-            self.sValue += pitchVariance[0]
-            self.sScore += 1
-            print("sScore awarded from pitch variance")
+            if soundlvl[1] == 0 and soundlvl[0] < 1:
+                self.hValue += soundlvl[0]
+                self.hScore += 1
+                print("hScore awarded from sound level")
 
-        elif pitchVariance[1] == 2 and pitchVariance[0] < 1:
-            self.aValue += pitchVariance[0]
-            self.aScore += 1
-            print("aScore awarded from pitch variance")
+            elif soundlvl[1] == 1 and soundlvl[0] < 1:
+                self.sValue += soundlvl[0]
+                self.sScore += 1
+                print("sScore awarded from sound level")
 
-        elif pitchVariance[1] == 3 and pitchVariance[0] < 1:
-            self.fValue += pitchVariance[0]
-            self.fScore += 1
-            print("fScore awarded from pitch variance")
+            elif soundlvl[1] == 2 and soundlvl[0] < 1:
+                self.aValue += soundlvl[0]
+                self.aScore += 1
+                print("aScore awarded from sound level")
 
+            elif soundlvl[1] == 3 and soundlvl[0] < 1:
+                self.fValue += soundlvl[0]
+                self.fScore += 1
+                print("fScore awarded from sound level")
+
+            else:
+                print("Sound level not within any range")
         else:
-            print("Pitch variance not within any range")
+            self.minusCounter -= 1
 
-        if soundVariance[1] == 0 and soundVariance[0] < 1:
-            self.hValue += soundVariance[0]
-            self.hScore += 1
-            print("hScore awarded from sound variance")
+        if self.methods[2]:
+            pitchVariance = self.checkPitchVariance(measurementsArray)
 
-        elif soundVariance[1] == 1 and soundVariance[0] < 1:
-            self.sValue += soundVariance[0]
-            self.sScore += 1
-            print("sScore awarded from sound variance")
+            if pitchVariance[1] == 0 and pitchVariance[0] < 1:
+                self.hValue += pitchVariance[0]
+                self.hScore += 1
+                print("hScore awarded from pitch variance")
 
-        elif soundVariance[1] == 2 and soundVariance[0] < 1:
-            self.aValue += soundVariance[0]
-            self.aScore += 1
-            print("aScore awarded from sound variance")
+            elif pitchVariance[1] == 1 and pitchVariance[0] < 1:
+                self.sValue += pitchVariance[0]
+                self.sScore += 1
+                print("sScore awarded from pitch variance")
 
-        elif soundVariance[1] == 3 and soundVariance[0] < 1:
-            self.fValue += soundVariance[0]
-            self.fScore += 1
-            print("fScore awarded from sound variance")
+            elif pitchVariance[1] == 2 and pitchVariance[0] < 1:
+                self.aValue += pitchVariance[0]
+                self.aScore += 1
+                print("aScore awarded from pitch variance")
 
+            elif pitchVariance[1] == 3 and pitchVariance[0] < 1:
+                self.fValue += pitchVariance[0]
+                self.fScore += 1
+                print("fScore awarded from pitch variance")
+
+            else:
+                print("Pitch variance not within any range")
         else:
-            print("Sound variance not within any range")
+            self.minusCounter -= 1
 
-        if soundlvl[1] == 0 and soundlvl[0] < 1:
-            self.hValue += soundlvl[0]
-            self.hScore += 1
-            print("hScore awarded from sound level")
+        if self.methods[3]:
+            soundVariance = self.checkSoundVariance(measurementsArray)
 
-        elif soundlvl[1] == 1 and soundlvl[0] < 1:
-            self.sValue += soundlvl[0]
-            self.sScore += 1
-            print("sScore awarded from sound level")
+            if soundVariance[1] == 0 and soundVariance[0] < 1:
+                self.hValue += soundVariance[0]
+                self.hScore += 1
+                print("hScore awarded from sound variance")
 
-        elif soundlvl[1] == 2 and soundlvl[0] < 1:
-            self.aValue += soundlvl[0]
-            self.aScore += 1
-            print("aScore awarded from sound level")
+            elif soundVariance[1] == 1 and soundVariance[0] < 1:
+                self.sValue += soundVariance[0]
+                self.sScore += 1
+                print("sScore awarded from sound variance")
 
-        elif soundlvl[1] == 3 and soundlvl[0] < 1:
-            self.fValue += soundlvl[0]
-            self.fScore += 1
-            print("fScore awarded from sound level")
+            elif soundVariance[1] == 2 and soundVariance[0] < 1:
+                self.aValue += soundVariance[0]
+                self.aScore += 1
+                print("aScore awarded from sound variance")
 
+            elif soundVariance[1] == 3 and soundVariance[0] < 1:
+                self.fValue += soundVariance[0]
+                self.fScore += 1
+                print("fScore awarded from sound variance")
+
+            else:
+                print("Sound variance not within any range")
         else:
-            print("Sound level not within any range")
+            self.minusCounter -= 1
 
-        if pwrFreq[1] == 0 and pwrFreq[0] < 1:
-            self.hValue += pwrFreq[0]
-            self.hScore += 1
-            print("hScore awarded from sound level")
 
-        elif pwrFreq[1] == 1 and pwrFreq[0] < 1:
-            self.sValue += pwrFreq[0]
-            self.sScore += 1
-            print("sScore awarded from sound level")
+        if self.methods[4]:
+            pwrFreq = self.checkMostPowerfulFrequency(measurementsArray)
 
-        elif pwrFreq[1] == 2 and pwrFreq[0] < 1:
-            self.aValue += pwrFreq[0]
-            self.aScore += 1
-            print("aScore awarded from sound level")
+            if pwrFreq[1] == 0 and pwrFreq[0] < 1:
+                self.hValue += pwrFreq[0]
+                self.hScore += 1
+                print("hScore awarded from sound level")
 
-        elif pwrFreq[1] == 3 and pwrFreq[0] < 1:
-            self.fValue += pwrFreq[0]
-            self.fScore += 1
-            print("fScore awarded from sound level")
+            elif pwrFreq[1] == 1 and pwrFreq[0] < 1:
+                self.sValue += pwrFreq[0]
+                self.sScore += 1
+                print("sScore awarded from sound level")
 
-        else:
-            print("Power frequency not within any range")
+            elif pwrFreq[1] == 2 and pwrFreq[0] < 1:
+                self.aValue += pwrFreq[0]
+                self.aScore += 1
+                print("aScore awarded from sound level")
+
+            elif pwrFreq[1] == 3 and pwrFreq[0] < 1:
+                self.fValue += pwrFreq[0]
+                self.fScore += 1
+                print("fScore awarded from sound level")
+
+            else:
+                print("Power frequency not within any range")
 
         theEmotionArray = [self.zeroDivision(self.hValue, self.hScore), self.zeroDivision(self.sValue, self.sScore),
                            self.zeroDivision(self.aValue, self.aScore), self.zeroDivision(self.fValue, self.fScore)]

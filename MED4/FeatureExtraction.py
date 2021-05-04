@@ -117,7 +117,7 @@ class FeatureExtraction:
         indices = PSD > max(PSD) * 0.6  # Find all freqs with large power
         PSDclean = PSD * indices  # Zero out all others
 
-        maxV = max(PSDclean[:int(len(PSDclean) / 3)])
+        maxV = max(PSDclean[:1000])
         index = np.where(PSDclean == maxV)
         pwrFreq = min(freq[index])
         return pwrFreq

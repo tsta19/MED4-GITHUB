@@ -9,6 +9,7 @@ from scipy.io import wavfile
 import librosa as lbs
 from scipy.io.wavfile import write
 
+
 # np.set_printoptions(threshold=sys.maxsize)
 
 def getFreqDistribution(data):
@@ -78,7 +79,8 @@ def getFreqDistribution(data):
     print("Samples in frequency range 1100-1200:", len(freq1112))
     print("--------------------------------------------------")
 
-def mostPowerfulFrequency(data1, samplerate1):
+
+def mostPowerfulFrequency1(data1, samplerate1):
     data, samplerate = data1, samplerate1
     length = len(data) / samplerate
     time = np.linspace(0., length,
@@ -92,8 +94,9 @@ def mostPowerfulFrequency(data1, samplerate1):
     L = np.arange(1, np.floor(n / 2),
                   dtype="int")  ## Only plot the first half of freqs, this seperates the second half
     indices = PSD > max(PSD) * 0.3  # Find all freqs with large power
+    print("fff", indices)
     PSDclean = PSD * indices  # Zero out all others
-
+    print('len', len(PSDclean))
     for i in range(len(freq[L])):
         if PSDclean[i] == max(PSDclean[L]):
             print("--------------------------------------------------")
@@ -102,8 +105,35 @@ def mostPowerfulFrequency(data1, samplerate1):
             return pwrFreq
 
 
+def mostPowerfulFrequency(data1, samplerate1):
+    data, samplerate = data1, samplerate1
+    length = len(data) / samplerate
+    time = np.linspace(0., length,
+                       len(data))  # list the size of samplesize with 1 sample-time length per iteration
+    f = data  # Signal
+    dt = time[4] - time[3]  ##Iteration length variable
+    n = len(time)  ##Amount of samples
+    fhat = np.fft.fft(f, n)  ### Fourier transformed signal
+    PSD = fhat * np.conj(fhat) / n  ## Computing power spectrum of the signal
+    freq = (1 / (dt * n) * np.arange(n))  ## Making freqeuncies for x-axis
+    L = np.arange(1, np.floor(n / 2),
+                  dtype="int")  ## Only plot the first half of freqs, this seperates the second half
+    indices = PSD > max(PSD) * 0.6  # Find all freqs with large power
+    print(indices == True)
+    PSDclean = PSD * indices  # Zero out all others
+    print('maxv', max(PSDclean[:1000]))
+    print('len', len(PSDclean)/3)
+
+    maxV = max(PSDclean[:1000])
+    index = np.where(PSDclean == maxV)
+    pwrFreq = min(freq[index])
+
+    print("pwrFreq: ", pwrFreq)
+    return pwrFreq
+
+
 if __name__ == "__main__":
-    samplerate, data = wavfile.read("Sound_Files/Emotions/Angry/Angry1.wav")
+    samplerate, data = wavfile.read("Sound_Files/Emotions/Angry/Angry_1.wav")
     print(np.shape(data))
 
     datacut = []
@@ -113,9 +143,6 @@ if __name__ == "__main__":
     print(len(datacut))
 
     mostPowerfulFrequency(datacut, samplerate)
-
-
-
 
     # wav_fname = "detteerentest.wav"
     # data, samplerate = lbs.load(wav_fname)
@@ -207,4 +234,3 @@ if __name__ == "__main__":
     #
     #
     # getFreqDistribution(absFfilt)
-

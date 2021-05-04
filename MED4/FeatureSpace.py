@@ -93,7 +93,7 @@ class FeatureSpace:
         return relation
 
     def zeroDivision(self, n, d):
-        return n / d if d > 0 else 100
+        return n / d if d > 0 or n > 0 else 100
 
     def checkPitch(self, measurementsArray):
         pHappy = self.getRelation(self.pitchMean_happy, self.pitchStd_happy, measurementsArray[0])

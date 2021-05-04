@@ -120,8 +120,6 @@ class FeatureExtraction:
         maxV = max(PSDclean[:int(len(PSDclean) / 3)])
         index = np.where(PSDclean == maxV)
         pwrFreq = min(freq[index])
-
-        print("pwrFreq: ", pwrFreq)
         return pwrFreq
 
     def get_features_from_segment(self, data):
@@ -169,7 +167,8 @@ class FeatureExtraction:
                 noiseCounter += 1
                 if noiseCounter > 3:
                     if voiceCounter > 3:
-                        p, s, pVar, sVar, pFreq = self.get_features_from_arrays(pitchArr, decibelArr, data)
+                        p, s, pVar, sVar, pFreq = self.get_features_from_arrays(pitchArr, decibelArr, newArr[i])
+                        print([p, s, pVar, sVar, pFreq])
                         if len(features) <= 1:
                             features = [p, s, pVar, sVar, pFreq]
                         else:

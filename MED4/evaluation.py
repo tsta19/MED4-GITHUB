@@ -22,11 +22,11 @@ class Evaluation:
 
     def ExtractSoundFiles(self, emotion):
         emotionArr = np.array([])
+        np.set_printoptions(suppress=True)
         folder = "Sound_Files/Emotions/" + emotion + "/"
         for filename in os.listdir(folder):
             if filename is not None:
                 tempArr = self.fe.get_features_from_clip(folder, filename)
-                print("tempArr: " + str(tempArr))
                 if len(tempArr) != 0:
                     if len(emotionArr) == 0:
                         emotionArr = tempArr
@@ -34,9 +34,41 @@ class Evaluation:
                         emotionArr = np.vstack((emotionArr, tempArr))
                         # i in range(len(tempArr)):
                             #emotionArr = np.vstack(tempArr[i])
+
+        #f = open(str(emotion) + ".txt", "w")
+        #emotionArr = emotionArr.tolist()
+        #for x in range(len(emotionArr)):
+            #f.write(str(emotionArr[x]) + "\n")
+        #f.close()
+        emotionArr = np.array(emotionArr)
         return emotionArr
 
-    def makeDataset(self, emotions):
+    def makeDatasetFromText(self,emotions):
+        self.featuresX = np.array([])
+        self.featuresY = np.array([])
+        for i in range(len(emotions)):
+            f = open(str(emotions[i]) + ".txt", "r")
+            readlines = f.read()
+            lines = readlines.replace("[", "").replace("]", "").strip().split('\n')
+
+            features = [line.split(', ') for line in lines]
+
+            for x in range(len(features)):
+                for y in range(len(features[x])):
+                    features[x][y] = float(features[x][y])
+
+            for x in range(len(features)):
+                if len(self.featuresX) <= 1:
+                    self.featuresX = features[x]
+                else:
+                    self.featuresX = np.vstack((self.featuresX, features[x]))
+            self.featuresY = np.append(self.featuresY, np.array([i for x in range(len(features))]))
+
+        print()
+        print("dataset made")
+
+
+    def makeDatasetFromSound(self, emotions):
         self.featuresX = np.array([])
         self.featuresY = np.array([])
         for i in range(len(emotions)):
@@ -46,7 +78,6 @@ class Evaluation:
                     self.featuresX = features[x]
                 else:
                     self.featuresX = np.vstack((self.featuresX, features[x]))
-                print(self.featuresX)
             self.featuresY = np.append(self.featuresY, np.array([i for x in range(len(features))]))
 
         print()
@@ -54,41 +85,26 @@ class Evaluation:
 
     def train(self, emotions, methods):
         self.fs.setMethods(methods)
-        
-        print(self.featuresX)
-        print(len(self.featuresX))
-        print(self.featuresY)
-
-        for i in enumerate(self.featuresX[0]):
-            print(i)
 
         #featuresX = [x for x in self.featuresX[] if methods[x] is True]
         #featuresX = [[y for y in self.featuresX[x] if methods[self.featuresX.index(y)] is True]for x in range(len(self.featuresX))]
         featuresX = [[i for e, i in enumerate(self.featuresX[x]) if methods[e] is True]for x in range(len(self.featuresX))]
-        print(featuresX)
         print("featureX: " + str(featuresX))
 
         x_train, x_test, y_train, y_test = model_selection.train_test_split(featuresX, self.featuresY, test_size=0.2)
-        print(x_train)
-        print(x_test)
-        print(y_train)
-        print(y_test)
 
         numOfMethods = np.count_nonzero(methods)
         print(numOfMethods)
 
         arr = [[[] for x in range(numOfMethods)] for i in range(len(emotions))]
-        print("arrrrrrr" + str(arr))
 
         for x in range(len(x_train)):
             for y in range(numOfMethods):
                 arr[int(y_train[x])][y].append(x_train[x][y])
-            print(arr)
 
         f = open("featurespacevariables.txt", "w")
         f.write(str(emotions)+"\n")
         f.write("Pitch, Sound Level, Pitch Variance, Sound Level Variance, Power Frequency\n")
-        print(arr)
         for x in range(len(arr)):
             featureSpace = np.array([])
             featureSTD = np.array([])

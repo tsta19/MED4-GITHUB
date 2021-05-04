@@ -88,12 +88,12 @@ class FeatureSpace:
         return distance
 
     def getRelation(self, mean, std, measurementsArrayValue):
-        relation = (mean + self.getDistance(measurementsArrayValue, mean)) / (mean + std)
-
+        #relation = (mean + self.getDistance(measurementsArrayValue, mean)) / (mean + std)
+        relation = self.zeroDivision((mean + self.getDistance(measurementsArrayValue, mean)), (mean + std))
         return relation
 
     def zeroDivision(self, n, d):
-        return n / d if d > 0 or n > 0 else 100
+        return n / d if d > 0 or n > 0 else 10000
 
     def checkPitch(self, measurementsArray):
         pHappy = self.getRelation(self.pitchMean_happy, self.pitchStd_happy, measurementsArray[0])

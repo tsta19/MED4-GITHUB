@@ -20,26 +20,58 @@ class Evaluation:
     fe = FeatureExtraction()
     fs = fe.getFeatureSpace()
 
-    def ExtractSoundFiles(self, emotion):
+    def ExtractSoundFiles(self, emotion, noiseRange):
         emotionArr = np.array([])
         np.set_printoptions(suppress=True)
         folder = "Sound_Files/Emotions/" + emotion + "/"
         for filename in os.listdir(folder):
             if filename is not None:
-                tempArr = self.fe.get_features_from_clip(folder, filename)
-                if len(tempArr) != 0:
+                tempArr = self.fe.get_features_from_clip(folder, filename, noiseRange)
+                if len(tempArr) > 1:
                     if len(emotionArr) == 0:
                         emotionArr = tempArr
                     else:
                         emotionArr = np.vstack((emotionArr, tempArr))
                         # i in range(len(tempArr)):
                             #emotionArr = np.vstack(tempArr[i])
+        f = open(str(emotion) + ".txt", "w")
+        emotionArr = emotionArr.tolist()
+        for x in range(len(emotionArr)):
+            f.write(str(emotionArr[x]) + "\n")
+        f.close()
+        emotionArr = np.array(emotionArr)
+        print()
+        print(emotionArr)
+        print(len(emotionArr[0]))
+        print(len(emotionArr))
 
-        #f = open(str(emotion) + ".txt", "w")
-        #emotionArr = emotionArr.tolist()
-        #for x in range(len(emotionArr)):
-            #f.write(str(emotionArr[x]) + "\n")
-        #f.close()
+        return emotionArr
+
+    def cut_off_array(self, emotionArr):
+        emotionArr = np.array(emotionArr)
+
+        for x in range(len(emotionArr[0])):
+            #q15, q85 = np.percentile(emotionArr, 25), np.percentile(emotionArr, 75)
+            #iqr = q85 - q15
+            #cut_off = iqr * 1.5
+            #lower, upper = q15 - cut_off, q85 + cut_off
+
+            data_mean, data_std = np.mean(emotionArr[:,x]), np.std(emotionArr[:,x])
+            print("data mean: " + str(data_mean))
+            print("data std: " + str(data_std))
+            cut_off = data_std
+            lower, upper = data_mean - cut_off, data_mean + cut_off
+
+            outliers_removed = []
+            for i in range(len(emotionArr)):
+                if emotionArr[i][x] > lower and emotionArr[i][x] < upper:
+                    if len(outliers_removed) < 1:
+                        outliers_removed = emotionArr[i]
+                    else:
+                        outliers_removed = np.vstack((outliers_removed, emotionArr[i]))
+            emotionArr = outliers_removed
+            print(emotionArr)
+
         emotionArr = np.array(emotionArr)
         return emotionArr
 
@@ -57,6 +89,9 @@ class Evaluation:
                 for y in range(len(features[x])):
                     features[x][y] = float(features[x][y])
 
+            #features = self.cut_off_array(features)
+            #print(features)
+
             for x in range(len(features)):
                 if len(self.featuresX) <= 1:
                     self.featuresX = features[x]
@@ -68,11 +103,12 @@ class Evaluation:
         print("dataset made")
 
 
-    def makeDatasetFromSound(self, emotions):
+    def makeDatasetFromSound(self, emotions, noiseRange):
         self.featuresX = np.array([])
         self.featuresY = np.array([])
         for i in range(len(emotions)):
-            features = self.ExtractSoundFiles(emotions[i])
+            features = self.ExtractSoundFiles(emotions[i], noiseRange)
+            features = self.cut_off_array(features)
             for x in range(len(features)):
                 if len(self.featuresX) <= 1:
                     self.featuresX = features[x]
@@ -85,10 +121,11 @@ class Evaluation:
 
     def train(self, emotions, methods):
         self.fs.setMethods(methods)
+        self.fs.setEmotions(emotions)
 
         #featuresX = [x for x in self.featuresX[] if methods[x] is True]
         #featuresX = [[y for y in self.featuresX[x] if methods[self.featuresX.index(y)] is True]for x in range(len(self.featuresX))]
-        featuresX = [[i for e, i in enumerate(self.featuresX[x]) if methods[e] is True]for x in range(len(self.featuresX))]
+        featuresX = [[i for e, i in enumerate(self.featuresX[x]) if methods[e] is True] for x in range(len(self.featuresX))]
         print("featureX: " + str(featuresX))
 
         x_train, x_test, y_train, y_test = model_selection.train_test_split(featuresX, self.featuresY, test_size=0.2)
@@ -104,7 +141,7 @@ class Evaluation:
 
         f = open("featurespacevariables.txt", "w")
         f.write(str(emotions)+"\n")
-        f.write("Pitch, Sound Level, Pitch Variance, Sound Level Variance, Power Frequency\n")
+        f.write(str(methods)+"\n")
         for x in range(len(arr)):
             featureSpace = np.array([])
             featureSTD = np.array([])
@@ -129,12 +166,6 @@ class Evaluation:
         print(xtest)
         for x in range(len(xtest)):
             predictResult = np.append(predictResult, self.fs.checkEmotion(xtest[x]))
-
-        accuracy = accuracy_score(ytest, predictResult)
-
-        print("Accuracy: " + str(accuracy))
-        print("Confusion Matrix:")
-        print(confusion_matrix(ytest, predictResult))
 
         return [ytest, predictResult]
 

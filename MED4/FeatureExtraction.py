@@ -15,7 +15,7 @@ class FeatureExtraction:
     def __init__(self):
         np.set_printoptions(threshold=sys.maxsize)
 
-        self.CHUNK = 1024 * 2  # number of data points to read at a time
+        self.CHUNK = 1024*2   # number of data points to read at a time
         self.RATE = 44100  # time resolution of the recording device (Hz)
         self.TARGET = 2100  # show only this one frequency
 
@@ -96,9 +96,9 @@ class FeatureExtraction:
         pitchVar = np.std(arrP)
         dBVar = np.std(arrSL)
 
-        datacut = rawData[:, 0]
+        #datacut = rawData[:, 0]
 
-        powerFreq = self.mostPowerfulFrequency(datacut, self.RATE)
+        powerFreq = 0.0 #self.mostPowerfulFrequency(datacut, self.RATE)
         return pitch, dB, pitchVar, dBVar, powerFreq
 
     def mostPowerfulFrequency(self, data1, samplerate1):
@@ -132,7 +132,7 @@ class FeatureExtraction:
         pitch = (estDigPitch * self.samplingFreq / (2 * np.pi))
         return decibel, pitch
 
-    def get_features_from_clip(self, soundDirectory, fileName):
+    def get_features_from_clip(self, soundDirectory, fileName, noiseRange):
         print("Starting getting features from " + fileName)
 
         voiceCounter = 0
@@ -165,14 +165,14 @@ class FeatureExtraction:
                 noiseCounter = 0
             else:
                 noiseCounter += 1
-                if noiseCounter > 3:
+                if noiseCounter > noiseRange:
                     if voiceCounter > 3:
                         p, s, pVar, sVar, pFreq = self.get_features_from_arrays(pitchArr, decibelArr, newArr[i])
-                        print([p, s, pVar, sVar, pFreq])
+                        print([p, s, pVar, sVar])
                         if len(features) <= 1:
-                            features = [p, s, pVar, sVar, pFreq]
+                            features = [p, s, pVar, sVar]
                         else:
-                            features = np.vstack((features, [p, s, pVar, sVar, pFreq]))
+                            features = np.vstack((features, [p, s, pVar, sVar]))
 
                     pitchArr = np.array([])
                     decibelArr = np.array([])

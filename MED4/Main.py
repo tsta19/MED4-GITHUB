@@ -8,113 +8,74 @@ import numpy as np
 
 def GetMeanAccuracy(iterations, emotions,methods):
     print(methods)
+    accuracy = np.array([])
+
     for x in range(iterations):
         x_test, y_test = e.train(emotions, methods)
 
-        checkList = []
+        conMatrix = e.test(x_test, y_test)
 
-        counter = 0
-        for y in range(len(checkList)):
-
-            if checkList[y] in y_test:
-                counter += 1
-
-        if counter > len(checkList)-1:
-            conMatrixArr.append(e.test(x_test, y_test))
-
-    print("------------------------------")
-    print()
-
-    print(len(conMatrixArr))
-
-    accuracy = np.array([])
-
-    for x in range(len(conMatrixArr)):
-        accuracy = np.append(accuracy, accuracy_score(conMatrixArr[x][0], conMatrixArr[x][1]))
+        accuracy = np.append(accuracy, accuracy_score(conMatrix[0], conMatrix[1]))
         print("Accuracy: " + str(accuracy[x]))
         print("Confusion Matrix:")
-        print(confusion_matrix(conMatrixArr[x][0], conMatrixArr[x][1]))
+        print(confusion_matrix(conMatrix[0], conMatrix[1]))
 
-        unique_numbers = list(set(conMatrixArr[x][0]))
+        """unique_numbers = list(set(conMatrix[x][0]))
         emotionStr = emotions[int(unique_numbers[0])]
         for i in range(1, len(unique_numbers)):
             emotionStr += " " + str(emotions[int(unique_numbers[i])])
-
-        print(emotionStr)
-
-        plt.show()
+            
+        print(emotionStr)"""
         print()
 
-    return str(np.mean(accuracy))
+    return np.mean(accuracy)
 
 
-if __name__ == '__main__':
-    methods = [True, True, True, True, True]
-    e = Evaluation()
-    methodNames = ["Pitch", "Sound Level", "Pitch Variance", "Sound Level Variance", "Power Frequency"]
-    emotions = ["Angry", "Fear", "Happiness", "Sad"]
-    dataSetDone = True
+def evalBestMethod(iterations, emotions, methods):
+    acc = [[] for i in range(4)]
+    accMethods = [[] for i in range(4)]
 
-    if dataSetDone:
-        e.makeDatasetFromText(emotions)
-    else:
-        e.makeDatasetFromSound(emotions)
+    for i1 in range(len(methods)-1):
+        methods = [False, False, False, False, False]
+        methods[i1] = True
+        acc[0].append(GetMeanAccuracy(iterations, emotions, methods))
+        accMethods[0].append(methods)
 
-    conMatrixArr = []
-    iterations = 1
+        for i2 in range(i1 + 1, len(methods)-1):
+            methods = [False, False, False, False, False]
+            methods[i1], methods[i2] = True, True
+            acc[1].append(GetMeanAccuracy(iterations, emotions, methods))
+            accMethods[1].append(methods)
 
-    acc = [[] for i in range(5)]
-    accMethods = [[] for i in range(5)]
+            for i3 in range(i2 + 1, len(methods)-1):
+                methods = [False, False, False, False, False]
+                methods[i1], methods[i2], methods[i3] = True, True, True
+                acc[2].append(GetMeanAccuracy(iterations, emotions, methods))
+                accMethods[2].append(methods)
 
-    for i1 in range(len(methods)):
-        #methods = [False,False,False,False,False]
-        #methods[i1] = True
-        #acc[0].append(GetMeanAccuracy(iterations, emotions, methods))
-        #accMethods[0].append(methods)
-
-        for i2 in range(i1+1,len(methods)):
-            #methods = [False, False, False, False, False]
-            #methods[i1],methods[i2] = True, True
-            #acc[1].append(GetMeanAccuracy(iterations, emotions, methods))
-            #accMethods[1].append(methods)
-
-            for i3 in range(i2 + 1, len(methods)):
-                #methods = [False, False, False, False, False]
-                #methods[i1],methods[i2],methods[i3] = True, True, True
-                #acc[2].append(GetMeanAccuracy(iterations, emotions, methods))
-                #accMethods[2].append(methods)
-
-                for i4 in range(i3 + 1, len(methods)):
-                    methods = [False, False, False, False, False]
-                    methods[i1],methods[i2],methods[i3],methods[i4] = True, True, True, True
-                    acc[3].append(GetMeanAccuracy(iterations, emotions, methods))
-                    accMethods[3].append(methods)
-
-    methods = [True, True, True, True, True]
-    acc[4].append(GetMeanAccuracy(iterations, emotions, methods))
-    accMethods[4].append(methods)
+    methods = [True, True, True, True, False]
+    acc[3].append(GetMeanAccuracy(iterations, emotions, methods))
+    accMethods[3].append(methods)
 
     for i in range(len(accMethods)):
         print(len(accMethods[i]))
 
-    print("Mean Accuracy: " + str(acc))
+    acc = [[float(x) for x in i] for i in acc]
+
+    print(f"Mean Accuracy: {acc}")
     print("Methods used:" + str(accMethods))
 
-    maxAcc = [0.0,0.0,0.0,max(acc[3]),max(acc[4])]
+    maxAcc = [float(max(acc[0])), float(max(acc[1])), float(max(acc[2])), float(max(acc[3]))]
 
     print("Highest accuracy [0]: " + str(maxAcc[0]))
     print("Highest accuracy [1]: " + str(maxAcc[1]))
     print("Highest accuracy [2]: " + str(maxAcc[2]))
     print("Highest accuracy [3]: " + str(maxAcc[3]))
-    print("Highest accuracy [4]: " + str(maxAcc[4]))
 
-    print("Highest overall accuracy: " + str(max(maxAcc)))
-
+    print(f"Highest overall accuracy: {max(maxAcc)}")
 
     index1 = maxAcc.index(max(maxAcc))
-    print(index1)
     index2 = acc[index1].index(max(maxAcc))
-    print(index2)
     print("Highest Overall accuracy found in acc[" + str(index1) + "][" + str(index2) + "]")
 
     methodStr = ""
@@ -122,6 +83,45 @@ if __name__ == '__main__':
         if accMethods[index1][index2][x]:
             methodStr += " " + str(methodNames[x])
     print("The best combination of methods is:" + methodStr)
+
+
+def evalBestNoiseRange(iterations, emotions, methods, noiseRange):
+
+    acc = []
+    for x in range(noiseRange[0], noiseRange[1]):
+        e.makeDatasetFromSound(emotions, x)
+        acc.append(GetMeanAccuracy(iterations, emotions, methods))
+
+
+    print(acc)
+
+    print("The Best Noise Range is " + str((acc.index(max(acc))+ noiseRange[0])))
+    print("The Accuracy at that noise range was " + str(max(acc)))
+
+
+if __name__ == '__main__':
+    methods = [True, True, True, True, False]
+    e = Evaluation()
+    methodNames = ["Pitch", "Sound Level", "Pitch Variance", "Sound Level Variance", "Power Frequency"]
+    emotions = ["Fear", "Happiness", "Sad"]
+    dataSetDone = True
+    noiseRange = [5, 6]
+    iterations = 100
+
+    #evalBestNoiseRange(iterations, emotions, methods, 10)
+
+    if dataSetDone:
+        e.makeDatasetFromText(emotions)
+    else:
+        e.makeDatasetFromSound(emotions, noiseRange[0])
+
+    #evalBestNoiseRange(iterations, emotions, methods,noiseRange)
+
+    print("Accuracy: " + str(GetMeanAccuracy(iterations, emotions, methods)))
+
+    #evalBestMethod(iterations, emotions, methods)
+
+
 
 
     """if __name__ == '__main__':

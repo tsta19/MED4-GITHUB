@@ -20,13 +20,13 @@ class Evaluation:
     fe = FeatureExtraction()
     fs = fe.getFeatureSpace()
 
-    def ExtractSoundFiles(self, emotion, noiseRange):
+    def ExtractSoundFiles(self, emotion, noiseRange, voiceRange, chunkRange):
         emotionArr = np.array([])
         np.set_printoptions(suppress=True)
         folder = "Sound_Files/Emotions/" + emotion + "/"
         for filename in os.listdir(folder):
             if filename is not None:
-                tempArr = self.fe.get_features_from_clip(folder, filename, noiseRange)
+                tempArr = self.fe.get_features_from_clip(folder, filename, noiseRange, voiceRange, chunkRange)
                 if len(tempArr) > 1:
                     if len(emotionArr) == 0:
                         emotionArr = tempArr
@@ -51,15 +51,15 @@ class Evaluation:
         emotionArr = np.array(emotionArr)
 
         for x in range(len(emotionArr[0])):
-            #q15, q85 = np.percentile(emotionArr, 25), np.percentile(emotionArr, 75)
-            #iqr = q85 - q15
-            #cut_off = iqr * 1.5
-            #lower, upper = q15 - cut_off, q85 + cut_off
+            q15, q85 = np.percentile(emotionArr[:,x], 25), np.percentile(emotionArr[:,x], 75)
+            iqr = q85 - q15
+            cut_off = iqr * 1.5
+            lower, upper = q15 - cut_off, q85 + cut_off
 
             data_mean, data_std = np.mean(emotionArr[:,x]), np.std(emotionArr[:,x])
             print("data mean: " + str(data_mean))
             print("data std: " + str(data_std))
-            cut_off = data_std
+            cut_off = data_std*3
             lower, upper = data_mean - cut_off, data_mean + cut_off
 
             outliers_removed = []
@@ -75,7 +75,7 @@ class Evaluation:
         emotionArr = np.array(emotionArr)
         return emotionArr
 
-    def makeDatasetFromText(self,emotions):
+    def makeDatasetFromText(self, emotions):
         self.featuresX = np.array([])
         self.featuresY = np.array([])
         for i in range(len(emotions)):
@@ -89,7 +89,7 @@ class Evaluation:
                 for y in range(len(features[x])):
                     features[x][y] = float(features[x][y])
 
-            #features = self.cut_off_array(features)
+            features = self.cut_off_array(features)
             #print(features)
 
             for x in range(len(features)):
@@ -103,12 +103,12 @@ class Evaluation:
         print("dataset made")
 
 
-    def makeDatasetFromSound(self, emotions, noiseRange):
+    def makeDatasetFromSound(self, emotions, noiseRange, voiceRange, chunkRange):
         self.featuresX = np.array([])
         self.featuresY = np.array([])
         for i in range(len(emotions)):
-            features = self.ExtractSoundFiles(emotions[i], noiseRange)
-            features = self.cut_off_array(features)
+            features = self.ExtractSoundFiles(emotions[i], noiseRange, voiceRange, chunkRange)
+            #features = self.cut_off_array(features)
             for x in range(len(features)):
                 if len(self.featuresX) <= 1:
                     self.featuresX = features[x]
@@ -134,6 +134,11 @@ class Evaluation:
         print(numOfMethods)
 
         arr = [[[] for x in range(numOfMethods)] for i in range(len(emotions))]
+
+        print(arr)
+
+        print(x_train)
+        print(y_train)
 
         for x in range(len(x_train)):
             for y in range(numOfMethods):

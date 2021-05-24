@@ -123,7 +123,7 @@ class FeatureSpace:
         self.pVar = []
 
         for x in range(len(self.emotions)):
-            self.pVar.append(self.getRelation(self.pitchMean[x], self.pitchStd[x], measurementsArray[index]))
+            self.pVar.append(self.getRelation(self.pitchVariMean[x], self.pitchVariStd[x], measurementsArray[index]))
 
         if self.printData:
             print('---------------------------')
@@ -138,7 +138,7 @@ class FeatureSpace:
         self.sVar = []
 
         for x in range(len(self.emotions)):
-            self.sVar.append(self.getRelation(self.pitchMean[x], self.pitchStd[x], measurementsArray[index]))
+            self.sVar.append(self.getRelation(self.soundVariMean[x], self.soundVariStd[x], measurementsArray[index]))
 
         print('---------------------------')
         for x in range(len(self.emotions)):
@@ -155,7 +155,7 @@ class FeatureSpace:
         self.s = []
 
         for x in range(len(self.emotions)):
-            self.s.append(self.getRelation(self.pitchMean[x], self.pitchStd[x], measurementsArray[index]))
+            self.s.append(self.getRelation(self.soundLevelMean[x], self.soundLevelStd[x], measurementsArray[index]))
 
         if self.printData:
             print('---------------------------')
@@ -171,7 +171,7 @@ class FeatureSpace:
         self.pF = []
 
         for x in range(len(self.emotions)):
-            self.pF.append(self.getRelation(self.pitchMean[x], self.pitchStd[x], measurementsArray[index]))
+            self.pF.append(self.getRelation(self.pwrFreqMean[x], self.pwrFreqStd[x], measurementsArray[index]))
 
         if self.printData:
             print('---------------------------')

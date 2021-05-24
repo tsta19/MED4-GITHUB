@@ -2,36 +2,18 @@ import pyaudio  # Soundcard audio I/O access library
 import wave  # Python 3 module for reading / writing simple .wav files
 from Explorer import *
 
+arr =[177.75377036560894, 70.4315855575156, 46.603089237009314, 4.056082265740992, 137.2071415185928],\
+     [24.92716468136231, 1.5772147515226562, 13.812727031158781, 0.8438267565181715, 283.57214610686236],\
+     [120.04254954254392, 68.11013652720055, 22.900281094750994, 3.4105994776803352, 174.98240879137217],\
+     [19.83935389100496, 1.9228545598626956, 11.014239249999026, 0.9173410267936282, 376.1667103268225],\
+     [94.2091424526796, 62.79154584535144, 16.303739205583287, 1.856784824477556, 206.91389242808017],\
+     [11.93575886058402, 1.5610366873614507, 8.892786034550431, 0.8661665346790156, 563.785003563746]
 
-class Recorder:
-    FORMAT = pyaudio.paInt16
-    CHANNELS = 1
-    SAMPLERATE = 44100
-    CHUNK = 1024
-    RECORD_SECONDS = 3
-    WAVE_OUTPUT_FILENAME = "sound_file_1.wav"
+for x in range(len(arr)):
+    for y in range(len(arr[x])):
+        arr[x][y] = str(arr[x][y])
 
-    audio = pyaudio.PyAudio()
-    stream = audio.open(format=FORMAT, channels=CHANNELS, rate=SAMPLERATE, input=True, frames_per_buffer=CHUNK)
-
-    print("Started recording for {} second(s)".format(RECORD_SECONDS))
-    frames = []
-
-    for i in range(0, int(SAMPLERATE / CHUNK * RECORD_SECONDS)):
-        data = stream.read(CHUNK)
-        frames.append(data)
-    print("Recording has Finished")
-
-    stream.stop_stream()
-    stream.close()
-    audio.terminate()
-
-    exp = Explorer()
-
-    # Write your new .wav file with built in Python 3 Wav module
-    waveFile = wave.open(exp.getAudioFilePath() + WAVE_OUTPUT_FILENAME, 'wb')
-    waveFile.setnchannels(CHANNELS)
-    waveFile.setsampwidth(audio.get_sample_size(FORMAT))
-    waveFile.setframerate(SAMPLERATE)
-    waveFile.writeframes(b''.join(frames))
-    waveFile.close()
+for x in range(len(arr)):
+    for y in range(len(arr[x])):
+        #arr[x][y] = arr[x][y].replace('.', ',')
+        print(arr[x][y])

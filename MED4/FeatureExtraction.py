@@ -8,6 +8,7 @@ import wave
 import serial
 from scipy.io import wavfile
 from FeatureSpace import FeatureSpace
+import matplotlib.pyplot as plt
 
 
 class FeatureExtraction:
@@ -15,7 +16,8 @@ class FeatureExtraction:
     def __init__(self):
         np.set_printoptions(threshold=sys.maxsize)
 
-        self.CHUNK = 1024*2   # number of data points to read at a time
+        self.CHUNK = 1500
+        # number of data points to read at a time
         self.RATE = 44100  # time resolution of the recording device (Hz)
         self.TARGET = 2100  # show only this one frequency
 
@@ -96,9 +98,9 @@ class FeatureExtraction:
         pitchVar = np.std(arrP)
         dBVar = np.std(arrSL)
 
-        #datacut = rawData[:, 0]
+        datacut = rawData[:, 0]
 
-        powerFreq = 0.0 #self.mostPowerfulFrequency(datacut, self.RATE)
+        powerFreq = self.mostPowerfulFrequency(datacut, self.RATE)
         return pitch, dB, pitchVar, dBVar, powerFreq
 
     def mostPowerfulFrequency(self, data1, samplerate1):
@@ -111,15 +113,26 @@ class FeatureExtraction:
         n = len(time)  ##Amount of samples
         fhat = np.fft.fft(f, n)  ### Fourier transformed signal
         PSD = fhat * np.conj(fhat) / n  ## Computing power spectrum of the signal
-        freq = (1 / (dt * n) * np.arange(n))  ## Making freqeuncies for x-axis
-        L = np.arange(1, np.floor(n / 2),
-                      dtype="int")  ## Only plot the first half of freqs, this seperates the second half
-        indices = PSD > max(PSD) * 0.6  # Find all freqs with large power
-        PSDclean = PSD * indices  # Zero out all others
+        freq = (1 / (dt * n)) * np.arange(n)  ## Making freqeuncies for x-axis
 
-        maxV = max(PSDclean[:1000])
-        index = np.where(PSDclean == maxV)
-        pwrFreq = min(freq[index])
+        print(1 / (dt * n))
+        indices = PSD > max(PSD) * .8  # Find all freqs with large power
+        print(max(PSD) * .8 )
+        PSDclean = PSD * indices  # Zero out all others
+        #print(PSDclean)
+
+        maxV = max(PSDclean[:300])
+        index = np.where(PSDclean[:300] == maxV)
+        pwrFreq = freq[index]
+
+        plt.plot(freq[:1000], PSD[:1000], color="c", LineWidth=2, label="Filtered")
+        plt.xlim(0, 1000)
+        plt.ylabel("Power")
+        plt.xlabel("Frequency [Hz]")
+        plt.legend()
+        #plt.show()
+        pwrFreq = pwrFreq[0]
+
         return pwrFreq
 
     def get_features_from_segment(self, data):
@@ -132,7 +145,7 @@ class FeatureExtraction:
         pitch = (estDigPitch * self.samplingFreq / (2 * np.pi))
         return decibel, pitch
 
-    def get_features_from_clip(self, soundDirectory, fileName, noiseRange):
+    def get_features_from_clip(self, soundDirectory, fileName, noiseRange, voiceRange, chunkRange):
         print("Starting getting features from " + fileName)
 
         voiceCounter = 0
@@ -144,19 +157,29 @@ class FeatureExtraction:
         samplerate, data = wavfile.read(soundFilesSpec)
 
         newArr = []
-        chunk = self.CHUNK
+        chunk = chunkRange
+
+        """print(len(data))
+        print(len(data)/(self.RATE/1000))
+        print(chunk/(self.RATE/1000))
+
+        print()
+        print(int(len(data) / chunk))
+        print(len(data) / chunk)"""
 
         for x in range(int(len(data) / chunk)):
             if ((x + 1) * chunk + chunk) < len(data):
-                newArr.append(data[x * chunk:(x + 1) * chunk - 1])
-            else:
-                newArr.append(data[x * chunk:len(data) - 1])
+                newArr.append(data[x * chunk:(x + 1) * chunk ])
 
         features = np.array([[]])
 
         # create a numpy array holding a single read of audio data
         for i in range(len(newArr)):  # to it a few times just to see
             decibel, p = self.get_features_from_segment(newArr[i])
+
+            samplePerMillisecond = self.RATE / 1000
+           # print(len(newArr[i]))
+           # print(str(round((((i + 1) * len(newArr[i])) / samplePerMillisecond), 2)) + " ms: " + str((((i + 1) * len(newArr[i])) / samplePerMillisecond)-(((i) * len(newArr[i])) / samplePerMillisecond)))
 
             if 59 < decibel and p < 300:
                 voiceCounter += 1
@@ -166,13 +189,14 @@ class FeatureExtraction:
             else:
                 noiseCounter += 1
                 if noiseCounter > noiseRange:
-                    if voiceCounter > 3:
+                    if voiceCounter > voiceRange:
                         p, s, pVar, sVar, pFreq = self.get_features_from_arrays(pitchArr, decibelArr, newArr[i])
-                        print([p, s, pVar, sVar])
+
+                        print(str(round((((i)*chunk)/ self.RATE),2)) + "-" + str(round((((i+1)*chunk)/ self.RATE),2)) + " s: " + str([p, s, pVar, sVar, pFreq]))
                         if len(features) <= 1:
-                            features = [p, s, pVar, sVar]
+                            features = [p, s, pVar, sVar,pFreq]
                         else:
-                            features = np.vstack((features, [p, s, pVar, sVar]))
+                            features = np.vstack((features, [p, s, pVar, sVar,pFreq]))
 
                     pitchArr = np.array([])
                     decibelArr = np.array([])

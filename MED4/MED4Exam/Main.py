@@ -318,8 +318,8 @@ if __name__ == '__main__':
             evalBestEmotion(iterations, emotions, methods)
         elif evalBest == 5:
             evalBestMethod(iterations, emotions, methods)
-
-        x,y = GetMeanAccuracy(iterations, emotions, methods)
-        print("Accuracy: " + str(accuracy_score(x,y)))
+        elif evalBest == 0:
+            x, y = GetMeanAccuracy(iterations, emotions, methods)
+            print("Accuracy: " + str(accuracy_score(x,y)))
     else:
         fe.get_features_live(emotions, methods, noiseRange[0], voiceRange[0], chunkRange[0])

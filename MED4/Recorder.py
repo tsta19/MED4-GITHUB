@@ -1,19 +1,34 @@
 import pyaudio  # Soundcard audio I/O access library
 import wave  # Python 3 module for reading / writing simple .wav files
 from Explorer import *
+import seaborn as sn
+import pandas as pd
+import matplotlib.pyplot as plt
 
-arr =[177.75377036560894, 70.4315855575156, 46.603089237009314, 4.056082265740992, 137.2071415185928],\
-     [24.92716468136231, 1.5772147515226562, 13.812727031158781, 0.8438267565181715, 283.57214610686236],\
-     [120.04254954254392, 68.11013652720055, 22.900281094750994, 3.4105994776803352, 174.98240879137217],\
-     [19.83935389100496, 1.9228545598626956, 11.014239249999026, 0.9173410267936282, 376.1667103268225],\
-     [94.2091424526796, 62.79154584535144, 16.303739205583287, 1.856784824477556, 206.91389242808017],\
-     [11.93575886058402, 1.5610366873614507, 8.892786034550431, 0.8661665346790156, 563.785003563746]
+arr =[[1921, 1178, 1553, 387, 101],
+      [1052, 2920, 382, 52, 939],
+      [1161, 673, 2765, 1805, 192],
+      [ 213, 1, 1544, 4344, 1017],
+      [ 0, 0, 0, 0, 0]]
+
+emotions = ["Happy", "Angry", "Fear", "Sad", "None"]
+
+df_cm = pd.DataFrame(arr, index = [i for i in emotions],
+                  columns = [i for i in emotions])
+# plt.figure(figsize=(10,7))
+sn.set(font_scale=1.4) # for label size
+sn.heatmap(df_cm, annot=True, annot_kws={"size": 16}) # font size
+plt.show()
+
+line = ""
 
 for x in range(len(arr)):
+    line = ""
     for y in range(len(arr[x])):
-        arr[x][y] = str(arr[x][y])
+        line += str(arr[x][y]) + " "
+    print(line)
 
-for x in range(len(arr)):
-    for y in range(len(arr[x])):
+#for x in range(len(arr)):
+    #for y in range(len(arr[x])):
         #arr[x][y] = arr[x][y].replace('.', ',')
-        print(arr[x][y])
+        #print(arr[x][y])

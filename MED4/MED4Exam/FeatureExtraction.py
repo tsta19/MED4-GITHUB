@@ -7,7 +7,7 @@ import os
 import wave
 import serial
 from scipy.io import wavfile
-from FeatureSpace import FeatureSpace
+from MED4Exam.FeatureSpace import FeatureSpace
 import matplotlib.pyplot as plt
 
 
@@ -27,10 +27,10 @@ class FeatureExtraction:
         self.maxDigPitch = 1000 * 2 * np.pi / self.samplingFreq  # radians/sample
         # print("maxPitch", self.maxDigPitch)
 
-        self.fe = FeatureSpace()
+        self.fs = FeatureSpace()
 
     def getFeatureSpace(self):
-        return self.fe
+        return self.fs
 
     def combFilterPitchEstimation(self, inputSignal, minDigPitch, maxDigPitch):
         minPeriod = np.int(np.ceil(2 * np.pi / maxDigPitch))
@@ -49,58 +49,17 @@ class FeatureExtraction:
         estDigPitch = 2 * np.pi / periodGrid[estPeriodIdx]
         return estDigPitch, periodGrid, normAutoCorr
 
-    def get_features_live(self):
-        # ser = serial.Serial("COM3", 9600) comment in when arduino is in use
-        voiceCounter = 0
-        pitchArr = np.array([])
-        decibelArr = np.array([])
-        noiseCounter = 0
-        # dBArr = np.array([])
-        p = pyaudio.PyAudio()  # start the PyAudio class
-        stream = p.open(format=pyaudio.paInt16, channels=1, rate=self.RATE, input=True,
-                        frames_per_buffer=self.CHUNK)  # uses default input device
-
-        while True:
-            data = np.frombuffer(stream.read(self.CHUNK), dtype=np.int16)
-            decibel, pi = self.get_features_from_segment(data)
-
-            # dBArr = np.append(dBArr, decibel)
-            # with open("fakintextfile.txt", "w") as file:
-            #     file.write(str(dBArr))
-
-            if decibel > 59:
-                # print('The estimated pitch is {0:.2f} Hz.'.format(pi))
-                voiceCounter += 1
-                pitchArr = np.append(pitchArr, pi)
-                decibelArr = np.append(decibelArr, decibel)
-                noiseCounter = 0
-            else:
-                noiseCounter += 1
-                if noiseCounter > 3:
-                    # print("ikke lyd")
-                    if voiceCounter > 3:
-                        pitch, dB, pitchVar, dBVar, pFreq = self.get_features_from_arrays(pitchArr, decibelArr, data)
-                        self.fe.setFeatureSpaces()
-                        emotion = self.fe.checkEmotion([pitch, pitchVar, dBVar, dB, pFreq])
-                        print("Feature values (P, dB, PV, dBV, powFreq):", pitch, dB, pitchVar, dBVar, pFreq)
-
-                        # ser.write(f"{emotion}".encode()) comment in when arduino is in use
-                        # print("Value returned:", ser.read().decode()) comment in when arduino is in use
-
-                    pitchArr = np.array([])
-                    decibelArr = np.array([])
-                    voiceCounter = 0
-                    noiseCounter = 0
-
     def get_features_from_arrays(self, arrP, arrSL, rawData):
         pitch = np.mean(arrP)
         dB = np.mean(arrSL)
         pitchVar = np.std(arrP)
         dBVar = np.std(arrSL)
 
-        datacut = rawData[:, 0]
+        #print(rawData)
 
-        powerFreq = self.mostPowerfulFrequency(datacut, self.RATE)
+        #datacut = rawData[:, 0]
+
+        powerFreq = self.mostPowerfulFrequency(rawData, self.RATE)
         return pitch, dB, pitchVar, dBVar, powerFreq
 
     def mostPowerfulFrequency(self, data1, samplerate1):
@@ -115,21 +74,20 @@ class FeatureExtraction:
         PSD = fhat * np.conj(fhat) / n  ## Computing power spectrum of the signal
         freq = (1 / (dt * n)) * np.arange(n)  ## Making freqeuncies for x-axis
 
-        print(1 / (dt * n))
+        #print(1 / (dt * n))
         indices = PSD > max(PSD) * .8  # Find all freqs with large power
-        print(max(PSD) * .8 )
+        #print(max(PSD) * .8 )
         PSDclean = PSD * indices  # Zero out all others
-        #print(PSDclean)
 
         maxV = max(PSDclean[:300])
         index = np.where(PSDclean[:300] == maxV)
         pwrFreq = freq[index]
 
-        plt.plot(freq[:1000], PSD[:1000], color="c", LineWidth=2, label="Filtered")
-        plt.xlim(0, 1000)
-        plt.ylabel("Power")
-        plt.xlabel("Frequency [Hz]")
-        plt.legend()
+        #plt.plot(freq[:1000], PSD[:1000], color="c", LineWidth=2, label="Filtered")
+        #plt.xlim(0, 1000)
+        #plt.ylabel("Power")
+        #plt.xlabel("Frequency [Hz]")
+        #plt.legend()
         #plt.show()
         pwrFreq = pwrFreq[0]
 
@@ -151,6 +109,7 @@ class FeatureExtraction:
         voiceCounter = 0
         pitchArr = np.array([])
         decibelArr = np.array([])
+        dataArr = np.array([])
         noiseCounter = 0
 
         soundFilesSpec = os.path.join(soundDirectory, fileName)
@@ -158,14 +117,6 @@ class FeatureExtraction:
 
         newArr = []
         chunk = chunkRange
-
-        """print(len(data))
-        print(len(data)/(self.RATE/1000))
-        print(chunk/(self.RATE/1000))
-
-        print()
-        print(int(len(data) / chunk))
-        print(len(data) / chunk)"""
 
         for x in range(int(len(data) / chunk)):
             if ((x + 1) * chunk + chunk) < len(data):
@@ -177,20 +128,17 @@ class FeatureExtraction:
         for i in range(len(newArr)):  # to it a few times just to see
             decibel, p = self.get_features_from_segment(newArr[i])
 
-            samplePerMillisecond = self.RATE / 1000
-           # print(len(newArr[i]))
-           # print(str(round((((i + 1) * len(newArr[i])) / samplePerMillisecond), 2)) + " ms: " + str((((i + 1) * len(newArr[i])) / samplePerMillisecond)-(((i) * len(newArr[i])) / samplePerMillisecond)))
-
             if 59 < decibel and p < 300:
                 voiceCounter += 1
                 pitchArr = np.append(pitchArr, p)
                 decibelArr = np.append(decibelArr, decibel)
+                dataArr = np.append(dataArr, newArr[i])
                 noiseCounter = 0
             else:
                 noiseCounter += 1
                 if noiseCounter > noiseRange:
                     if voiceCounter > voiceRange:
-                        p, s, pVar, sVar, pFreq = self.get_features_from_arrays(pitchArr, decibelArr, newArr[i])
+                        p, s, pVar, sVar, pFreq = self.get_features_from_arrays(pitchArr, decibelArr, dataArr)
 
                         print(str(round((((i)*chunk)/ self.RATE),2)) + "-" + str(round((((i+1)*chunk)/ self.RATE),2)) + " s: " + str([p, s, pVar, sVar, pFreq]))
                         if len(features) <= 1:
@@ -200,11 +148,60 @@ class FeatureExtraction:
 
                     pitchArr = np.array([])
                     decibelArr = np.array([])
+                    dataArr = np.array([])
 
                     voiceCounter = 0
                     noiseCounter = 0
 
         return features
 
-# f = FeatureExtraction()
-# f.get_features_live()
+    def get_features_live(self, emotions, methods, noiseRange, voiceRange, chunkRange):
+        # ser = serial.Serial("COM3", 9600) comment in when arduino is in use
+        voiceCounter = 0
+        pitchArr = np.array([])
+        decibelArr = np.array([])
+        dataArr = np.array([])
+        noiseCounter = 0
+
+        p = pyaudio.PyAudio()  # start the PyAudio class
+        stream = p.open(format=pyaudio.paInt16, channels=1, rate=self.RATE, input=True,
+                        frames_per_buffer=self.CHUNK)  # uses default input device
+
+        self.fs.setMethods(methods)
+        self.fs.setEmotions(emotions)
+        self.fs.setFeatureSpaces()
+
+        print("Started listening...")
+
+        while True:
+            data = np.frombuffer(stream.read(self.CHUNK), dtype=np.int16)
+            decibel, pi = self.get_features_from_segment(data)
+
+            if 59 < decibel and pi < 300:
+                # print('The estimated pitch is {0:.2f} Hz.'.format(pi))
+                voiceCounter += 1
+                pitchArr = np.append(pitchArr, pi)
+                decibelArr = np.append(decibelArr, decibel)
+                dataArr = np.append(dataArr, data)
+                noiseCounter = 0
+            else:
+                noiseCounter += 1
+                if noiseCounter > noiseRange:
+                    # print("ikke lyd")
+                    if voiceCounter > voiceRange:
+                        pitch, dB, pitchVar, dBVar, pFreq = self.get_features_from_arrays(pitchArr, decibelArr, dataArr)
+
+                        emotion = self.fs.checkEmotion([pitch, pitchVar, dBVar, dB, pFreq])
+
+                        #(emotion)
+
+                        #print("Feature values (P, dB, PV, dBV, powFreq):", pitch, dB, pitchVar, dBVar, pFreq)
+
+                        # ser.write(f"{emotion}".encode()) comment in when arduino is in use
+                        # print("Value returned:", ser.read().decode()) comment in when arduino is in use
+
+                    pitchArr = np.array([])
+                    decibelArr = np.array([])
+                    voiceCounter = 0
+                    noiseCounter = 0
+

@@ -3,7 +3,7 @@ import math
 
 
 class FeatureSpace:
-    printData = True
+    printData = False
 
 
     prevState = 0
@@ -23,7 +23,7 @@ class FeatureSpace:
     def setFeatureSpaces(self):
         print("Getting imput from list")
 
-        f = open("featurespacevariables.txt", "r")
+        f = open("Feature Values/featurespacevariables.txt", "r")
         input = f.read()
         print(input)
         lines = input.replace("[", "").replace("]", "").strip().split('\n')
@@ -140,9 +140,10 @@ class FeatureSpace:
         for x in range(len(self.emotions)):
             self.sVar.append(self.getRelation(self.soundVariMean[x], self.soundVariStd[x], measurementsArray[index]))
 
-        print('---------------------------')
-        for x in range(len(self.emotions)):
-            print("Sound Variance " + self.emotions[x] + ":", self.sVar[x])
+        if self.printData:
+            print('---------------------------')
+            for x in range(len(self.emotions)):
+                print("Sound Variance " + self.emotions[x] + ":", self.sVar[x])
 
         mostProbableMood = [min(self.sVar), self.sVar.index(min(self.sVar))]
         return mostProbableMood
@@ -157,13 +158,13 @@ class FeatureSpace:
         for x in range(len(self.emotions)):
             self.s.append(self.getRelation(self.soundLevelMean[x], self.soundLevelStd[x], measurementsArray[index]))
 
+        mostProbableMood = [min(self.s), self.s.index(min(self.s))]
+
         if self.printData:
             print('---------------------------')
             for x in range(len(self.emotions)):
                 print("Sound Level " + self.emotions[x] + ":", self.s[x])
 
-        mostProbableMood = [min(self.s), self.s.index(min(self.s))]
-        print("mostProb sl" + str(mostProbableMood))
         return mostProbableMood
 
     def checkMostPowerfulFrequency(self, measurementsArray):
@@ -173,23 +174,18 @@ class FeatureSpace:
         for x in range(len(self.emotions)):
             self.pF.append(self.getRelation(self.pwrFreqMean[x], self.pwrFreqStd[x], measurementsArray[index]))
 
+        mostProbableMood = [min(self.pF), self.pF.index(min(self.pF))]
+
         if self.printData:
             print('---------------------------')
             for x in range(len(self.emotions)):
                 print("Powerful Frequency " + self.emotions[x] + ":", self.pF[x])
 
-        mostProbableMood = [min(self.pF), self.pF.index(min(self.pF))]
-        print("mostProb PF" +  str(mostProbableMood))
         return mostProbableMood
 
     def checkEmotion(self, measurementsArray):
-        print("measurements: " + str(measurementsArray))
-        #print('---------------------------')
-        #print("CheckPitch: ", pitch)
-        #print("CheckPitchVariance: ", pitchVariance)
-        #print("CheckSoundVariance: ", soundVariance)
-        #print("CheckSound: ", soundlvl)
-        #print("CheckPowerFrequency: ", pwrFreq)
+        if self.printData:
+            print("measurements: " + str(measurementsArray))
 
         self.minusCounter = 0
 
@@ -264,8 +260,6 @@ class FeatureSpace:
         theEmotionArray = []
 
         for x in range(len(self.emotions)):
-           # self.value[x] /= (len(self.methods) + self.minusCounter)
-            #print(self.value)
             theEmotionArray.append(self.zeroDivision(self.value[x], self.score[x]))
 
 
@@ -279,32 +273,23 @@ class FeatureSpace:
 
         if self.printData:
             print('---------------------------')
-            #print("hScore+:", self.hScore)
-            #print("sScore+:", self.sScore)
-            #print("aScore+:", self.aScore)
-            #print("fScore+:", self.fScore)
-            #print('---------------------------')
-            #print("Emotion value Happy:", theEmotionArray[0])
-            #print("Emotion value Sad:", theEmotionArray[1])
-            #print("Emotion value Angry:", theEmotionArray[2])
-            #print("Emotion value Fear:", theEmotionArray[3])
-            print('---------------------------')
 
         arr = [d > 1 for d in theEmotionArray]
+        if self.printData:
+            print("index af mindste i emotion array: "+str(theEmotionArray.index(min(theEmotionArray))))
+            print("emotion array min: "+str(min(theEmotionArray)))
 
-        print("index af mindste i emotion array: "+str(theEmotionArray.index(min(theEmotionArray))))
-        print("emotion array min: "+str(min(theEmotionArray)))
+            print('---------------------------')
 
-        print('---------------------------')
-        for x in range(len(self.emotions)):
-            print(f"Score {self.emotions[x]}: " + str(self.score[x]))
-        print('---------------------------')
-        for x in range(len(self.emotions)):
-            print(f"Emotion value {self.emotions[x]}: " + str(theEmotionArray[x]))
-        print('---------------------------')
+            for x in range(len(self.emotions)):
+                print(f"Score {self.emotions[x]}: " + str(self.score[x]))
+            print('---------------------------')
+            for x in range(len(self.emotions)):
+                print(f"Emotion value {self.emotions[x]}: " + str(theEmotionArray[x]))
+            print('---------------------------')
 
         if (all(arr)):
-            "No emotion detected, staying in same state"
+            print("No emotion detected, staying in same state")
             self.resetMoodScores()
             return 4
 

@@ -13,17 +13,19 @@ import numpy as np
 import cv2
 import os
 import wave
-from FeatureExtraction import FeatureExtraction
+from MED4Exam.FeatureExtraction import FeatureExtraction
 
 
-class Evaluation:
-    fe = FeatureExtraction()
-    fs = fe.getFeatureSpace()
+class Evaluation():
+
+    def __init__(self, fe):
+        self.fe = fe
+        self.fs = self.fe.getFeatureSpace()
 
     def ExtractSoundFiles(self, emotion, noiseRange, voiceRange, chunkRange):
         emotionArr = np.array([])
         np.set_printoptions(suppress=True)
-        folder = "Sound_Files/Emotions/" + emotion + "/"
+        folder = "Emotions/" + emotion + "/"
         for filename in os.listdir(folder):
             if filename is not None:
                 tempArr = self.fe.get_features_from_clip(folder, filename, noiseRange, voiceRange, chunkRange)
@@ -34,7 +36,7 @@ class Evaluation:
                         emotionArr = np.vstack((emotionArr, tempArr))
                         # i in range(len(tempArr)):
                             #emotionArr = np.vstack(tempArr[i])
-        f = open(str(emotion) + ".txt", "w")
+        f = open("Feature Values/" + str(emotion) + ".txt", "w")
         emotionArr = emotionArr.tolist()
         for x in range(len(emotionArr)):
             f.write(str(emotionArr[x]) + "\n")
@@ -79,7 +81,7 @@ class Evaluation:
         self.featuresX = np.array([])
         self.featuresY = np.array([])
         for i in range(len(emotions)):
-            f = open(str(emotions[i]) + ".txt", "r")
+            f = open("Feature Values/" + str(emotions[i]) + ".txt", "r")
             readlines = f.read()
             lines = readlines.replace("[", "").replace("]", "").strip().split('\n')
 
@@ -144,7 +146,7 @@ class Evaluation:
             for y in range(numOfMethods):
                 arr[int(y_train[x])][y].append(x_train[x][y])
 
-        f = open("featurespacevariables.txt", "w")
+        f = open("Feature Values/featurespacevariables.txt", "w")
         f.write(str(emotions)+"\n")
         f.write(str(methods)+"\n")
         for x in range(len(arr)):

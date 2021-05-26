@@ -1,11 +1,14 @@
 # import
-from evaluation import Evaluation
+from MED4Exam.evaluation import Evaluation
+from MED4Exam.FeatureExtraction import FeatureExtraction
+from MED4Exam.FeatureSpace import FeatureSpace
 from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay, accuracy_score, precision_score, recall_score, \
     f1_score
 import matplotlib.pyplot as plt
 import pandas as pd
 import seaborn as sn
 import numpy as np
+
 
 
 def GetMeanAccuracy(iterations, emotions, methods):
@@ -283,156 +286,40 @@ def evalBestChunkSize(iterations, emotions, methods, noiseRange, voiceRange, chu
 
 
 if __name__ == '__main__':
-    methods = [False, True, False, True, False]
-    e = Evaluation()
+    methods = [True, True, True, True, True]
     methodNames = ["Pitch", "Sound Level", "Pitch Variance", "Sound Level Variance", "Power Frequency"]
-    emotions = ["Happy", "Angry", "Fear"]
+    emotions = ["Happy", "Sad", "Angry", "Fear"]
+
+    eval = False
     dataSetDone = True
-    evalBest = False
+    evalBest = 0
+
     noiseRange = [3, 6]
     voiceRange = [1, 6]
     chunkRange = [1024, 13]
     iterations = 100
 
-    #arr =  [[1388,  535,  806,  102,    0],[ 424, 1620,    5,   17,  441],[ 484,  120, 1410,  465,   25],[   0,    0,  528, 2118,  412],[   0,    0,    0,    0,    0]]
+    fe = FeatureExtraction()
+    e = Evaluation(fe)
 
-    #y = [1,2,0,2]
-    #x = [1,0,0,2]
-    #print(confusion_matrix(x,y, normalize='true'))
+    if dataSetDone and evalBest == 0:
+        e.makeDatasetFromText(emotions)
+    elif evalBest == 0:
+        e.makeDatasetFromSound(emotions, noiseRange[0], voiceRange[0], chunkRange[0])
 
-    # evalBestNoiseRange(iterations, emotions, methods, 10)
-    #arr =  [[0.6307407407407407, 0.0, 0.0, 0.0, 0.16925925925925925], [0.6129629629629629, 0.6240740740740741, 0.6208641975308642, 0.44765432098765434, 0.0, 0.0, 0.17123456790123456, 0.0, 0.18024691358024691, 0.17629629629629628], [0.6237037037037036, 0.6214814814814815, 0.4411111111111111, 0.6195061728395062, 0.44925925925925925, 0.4434567901234568, 0.0, 0.17382716049382715, 0.1725925925925926, 0.1717283950617284], [0.6324691358024691, 0.44814814814814813, 0.43296296296296294, 0.4534567901234568, 0.17987654320987653], [0.4345679012345679]]
-    #arr = [[[True, False, False, False, False], [False, True, False, False, False], [False, False, True, False, False], [False, False, False, True, False], [False, False, False, False, True]], [[True, True, False, False, False], [True, False, True, False, False], [True, False, False, True, False], [True, False, False, False, True], [False, True, True, False, False], [False, True, False, True, False], [False, True, False, False, True], [False, False, True, True, False], [False, False, True, False, True], [False, False, False, True, True]], [[True, True, True, False, False], [True, True, False, True, False], [True, True, False, False, True], [True, False, True, True, False], [True, False, True, False, True], [True, False, False, True, True], [False, True, True, True, False], [False, True, True, False, True], [False, True, False, True, True], [False, False, True, True, True]], [[True, True, True, True, False], [True, True, True, False, True], [True, True, False, True, True], [True, False, True, True, True], [False, True, True, True, True]], [[True, True, True, True, True]]]
-    """arr = [[0.5383115942028985, 0.5830797101449275, 0.5204782608695652, 0.5342681159420289, 0.2313913043478261], [0.5367463768115942, 0.5385869565217392, 0.5355579710144928, 0.38208695652173913, 0.5595507246376812, 0.5821159420289855, 0.5822391304347826, 0.5191014492753623, 0.42236231884057973, 0.534840579710145], [0.5380797101449275, 0.5371014492753623, 0.3831159420289855, 0.5384130434782609, 0.38407971014492753, 0.3839420289855072, 0.5605507246376812, 0.5585434782608696, 0.5844130434782608, 0.4196521739130435], [0.5396739130434782, 0.38504347826086954, 0.3832463768115942, 0.38328260869565217, 0.5578623188405797], [0.38370289855072465]]
-    arr= [[[True, False, False, False, False], [False, True, False, False, False], [False, False, True, False, False], [False, False, False, True, False], [False, False, False, False, True]], [[True, True, False, False, False], [True, False, True, False, False], [True, False, False, True, False], [True, False, False, False, True], [False, True, True, False, False], [False, True, False, True, False], [False, True, False, False, True], [False, False, True, True, False], [False, False, True, False, True], [False, False, False, True, True]], [[True, True, True, False, False], [True, True, False, True, False], [True, True, False, False, True], [True, False, True, True, False], [True, False, True, False, True], [True, False, False, True, True], [False, True, True, True, False], [False, True, True, False, True], [False, True, False, True, True], [False, False, True, True, True]], [[True, True, True, True, False], [True, True, True, False, True], [True, True, False, True, True], [True, False, True, True, True], [False, True, True, True, True]], [[True, True, True, True, True]]]
+    if eval:
+        if evalBest == 1:
+            evalBestChunkSize(iterations, emotions, methods, noiseRange[0], voiceRange[0], chunkRange)
+        elif evalBest == 2:
+            evalBestNoiseRange(iterations, emotions, methods, noiseRange, voiceRange[0], chunkRange[0])
+        elif evalBest == 3:
+            evalBestVoiceRange(iterations, emotions, methods, noiseRange[0], voiceRange, chunkRange[0])
+        elif evalBest == 4:
+            evalBestEmotion(iterations, emotions, methods)
+        elif evalBest == 5:
+            evalBestMethod(iterations, emotions, methods)
 
-    for x in range(len(arr)):
-        for y in range(len(arr[x])):
-            arr[x][y] = str(arr[x][y])
-
-    for x in range(len(arr)):
-        for y in range(len(arr[x])):
-            #arr[x][y] = arr[x][y].replace('.', ',')
-            print(arr[x][y])"""
-    if evalBest is False:
-        if dataSetDone:
-            e.makeDatasetFromText(emotions)
-        else:
-            e.makeDatasetFromSound(emotions, noiseRange[0], voiceRange[0], chunkRange[0])
-
-    #else:
-    #evalBestVoiceRange(iterations, emotions, methods, noiseRange[0], voiceRange, chunkRange[0])
-        # e valBestNoiseRange(iterations, emotions, methods,noiseRange, voiceRange[0], chunkRange[0])
-    #evalBestMethod(iterations, emotions, methods)
-        # evalBestChunkSize(iterations, emotions, methods, noiseRange[0], voiceRange[0], chunkRange)
-    #evalBestMethod(iterations, emotions, methods)
-    x,y = GetMeanAccuracy(iterations, emotions, methods)
-    print("Accuracy: " + str(accuracy_score(x,y)))
-    #evalBestEmotion(iterations, emotions, methods)
-    """if __name__ == '__main__':
-
-    # Modes for processing
-    # Single File is a manual version where file name and outputName is specified
-    # Directory is an automatic version that goes through files in a directory
-    modeSingleFile = False
-    modeDirectory = True
-    debug = True
-    record = False
-
-    # Iterator(s)
-    iteration = 1
-
-    # Sample Frequency
-    sampleFrequency = 44100
-
-    # Arrays
-    meanFrequencies = []
-
-    # Class instantiations
-    exp = Explorer()
-    nRed = NoiseReduction()
-    spectra = SpectraAnalysis()
-    vr = VoiceRecognizer()
-
-    if record:
-        from Recorder import *
-
-        rec = Recorder()
+        x,y = GetMeanAccuracy(iterations, emotions, methods)
+        print("Accuracy: " + str(accuracy_score(x,y)))
     else:
-        print("Recording is turned: Off")
-
-    if modeSingleFile:
-        number = 1
-        soundFile = "{}sound_file_{}.{}".format(exp.getAudioFilePath(), number, "wav")
-        singleFileSpecification = os.path.join(str(soundFile))
-
-        nRed.noiseFiltering(False, soundFile, singleFileSpecification)
-        spectra.spectra("sound_file_1")
-        sampleRate, data = wavfile.read(exp.getAudioFilePath() + "sound_file_1" + ".wav")
-        vr.recognize(spectra.meanFrequency(data, sampleFrequency))
-
-        if debug:
-            print("Mean Frequency:", spectra.meanFrequency(data, sampleFrequency))
-
-    if modeDirectory:
-        soundFile = "mic"
-        outputName = "filtered"
-        for filename in glob.glob(os.path.join(exp.getAudioFilePath(), '*.wav')):
-            wavFile = wave.open(filename, 'r')
-            data = wavFile.readframes(wavFile.getnframes())
-            wavFile.close()
-
-        for audioFiles in glob.glob(os.path.join(exp.getAudioFilePath() + str(soundFile) + '*.wav')):
-            audioFileSpecification = os.path.join(exp.getFilteredFilePath(), str(soundFile) + "_" + str(iteration) + "_"
-                                                  + str(outputName) + ".wav")
-
-            if debug:
-                print("+------------------------+")
-                print("For-Loop iteration:", iteration)
-                print("File:", audioFileSpecification)
-
-            nRed.noiseFiltering(True, soundFile, audioFileSpecification, audioFiles)
-            spectra.spectra(audioFileSpecification)
-            # sampleRate, data = wavfile.read(exp.getAudioFilePath() + soundFile + "_" + str(iteration) + "_"
-            #                                 + str(outputName) + ".wav")
-            samples, sampleRate = librosa.load((exp.getFilteredFilePath() + soundFile + "_" + str(iteration) + "_"
-                                                + str(outputName) + ".wav"), sr=None, mono=True, offset=0.0,
-                                               duration=None)
-
-            if debug:
-                print("Samples:", samples)
-                print("SampleRate:", sampleRate)
-                fileDuration = len(samples) / sampleRate
-                print("File Duration:", round(fileDuration, 2), "second(s)")
-
-            spectra.fastFourierTransform(samples, sampleRate)
-            spectra.spectrogram(samples, sampleRate)
-
-            # spectra.spectrogram(samples, sampleRate)
-
-            meanFrequency = spectra.meanFrequency(samples, sampleFrequency)
-            meanFrequencies.append(meanFrequency)
-
-            if debug:
-                print("Mean Frequency:", round(meanFrequency, 4))
-                recognition = vr.recognize(meanFrequency)
-                print("+------------------------+", "\n")
-
-            iteration += 1
-            spectra.iterator += 1"""
-
-        # ----------------- WORK IN PROGRESS ---------------------------
-        #     with open("Program_Summary_Data", "w") as txt:
-        #         spacer = "+------------------------+"
-        #         space = "\n"
-        #         txt.write(spacer + space)
-        #         txt.write("File: " + str(audioFileSpecification) + space)
-        #         txt.write("Mean Frequencies: " + str(meanFrequencies) + space)
-        #         txt.write("File Duration: " + str(len(samples)) + space)
-        #         txt.write("Recognized as: " + str(recognition) + space)
-        #         txt.write(spacer + space)
-        #
-        # txt.close()
-        # ----------------- WORK IN PROGRESS ---------------------------
-
-    # dm.soundDataManager(soundDirectory, graphDirectory, "sound_file_")
+        fe.get_features_live(emotions, methods, noiseRange[0], voiceRange[0], chunkRange[0])

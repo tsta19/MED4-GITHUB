@@ -1,20 +1,6 @@
-import matplotlib.pyplot as plt
 from sklearn import model_selection
-from sklearn.tree import DecisionTreeClassifier
-from sklearn.neighbors import KNeighborsClassifier
-from sklearn.naive_bayes import GaussianNB
-from sklearn.metrics import accuracy_score
-from sklearn.metrics import confusion_matrix
-from sklearn.metrics import plot_confusion_matrix
-from sklearn.model_selection import cross_val_score
-from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay, accuracy_score, precision_score, recall_score, \
-    f1_score
 import numpy as np
-import cv2
 import os
-import wave
-from MED4Exam.FeatureExtraction import FeatureExtraction
-
 
 class Evaluation():
 
@@ -34,8 +20,6 @@ class Evaluation():
                         emotionArr = tempArr
                     else:
                         emotionArr = np.vstack((emotionArr, tempArr))
-                        # i in range(len(tempArr)):
-                            #emotionArr = np.vstack(tempArr[i])
         f = open("Feature Values/" + str(emotion) + ".txt", "w")
         emotionArr = emotionArr.tolist()
         for x in range(len(emotionArr)):
@@ -92,7 +76,6 @@ class Evaluation():
                     features[x][y] = float(features[x][y])
 
             features = self.cut_off_array(features)
-            #print(features)
 
             for x in range(len(features)):
                 if len(self.featuresX) <= 1:
@@ -110,7 +93,7 @@ class Evaluation():
         self.featuresY = np.array([])
         for i in range(len(emotions)):
             features = self.ExtractSoundFiles(emotions[i], noiseRange, voiceRange, chunkRange)
-            #features = self.cut_off_array(features)
+
             for x in range(len(features)):
                 if len(self.featuresX) <= 1:
                     self.featuresX = features[x]
@@ -125,8 +108,6 @@ class Evaluation():
         self.fs.setMethods(methods)
         self.fs.setEmotions(emotions)
 
-        #featuresX = [x for x in self.featuresX[] if methods[x] is True]
-        #featuresX = [[y for y in self.featuresX[x] if methods[self.featuresX.index(y)] is True]for x in range(len(self.featuresX))]
         featuresX = [[i for e, i in enumerate(self.featuresX[x]) if methods[e] is True] for x in range(len(self.featuresX))]
         print("featureX: " + str(featuresX))
 

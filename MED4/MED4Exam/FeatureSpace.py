@@ -1,6 +1,4 @@
 import numpy as np
-import math
-
 
 class FeatureSpace:
     printData = False
@@ -85,8 +83,6 @@ class FeatureSpace:
                 self.pwrFreqMean.append(features[index][0])
                 self.pwrFreqStd.append(features[index+1][0])
                 index += 2
-
-        # measurementsArray = [pitchlvl, pitchVari, soundVari, soundlvl, powerFreq]
 
     def getDistance(self, featureMeasurement, featureValue):
         distance = np.sqrt((featureValue - featureMeasurement) ** 2)

@@ -1,16 +1,5 @@
-import contextlib
-import math
-import os
-import sys
-import wave
 import numpy as np
-import matplotlib.pyplot as plt
 from scipy.io import wavfile
-import librosa as lbs
-from scipy.io.wavfile import write
-
-
-# np.set_printoptions(threshold=sys.maxsize)
 
 def getFreqDistribution(data):
     freq01 = []
@@ -84,18 +73,18 @@ def mostPowerfulFrequency1(data1, samplerate1):
     data, samplerate = data1, samplerate1
     length = len(data) / samplerate
     time = np.linspace(0., length,
-                       len(data))  # list the size of samplesize with 1 sample-time length per iteration
-    f = data  # Signal
-    dt = time[4] - time[3]  ##Iteration length variable
-    n = len(time)  ##Amount of samples
-    fhat = np.fft.fft(f, n)  ### Fourier transformed signal
-    PSD = fhat * np.conj(fhat) / n  ## Computing power spectrum of the signal
-    freq = (1 / (dt * n) * np.arange(n))  ## Making freqeuncies for x-axis
+                       len(data))
+    f = data
+    dt = time[4] - time[3]
+    n = len(time)
+    fhat = np.fft.fft(f, n)
+    PSD = fhat * np.conj(fhat) / n
+    freq = (1 / (dt * n) * np.arange(n))
     L = np.arange(1, np.floor(n / 2),
-                  dtype="int")  ## Only plot the first half of freqs, this seperates the second half
-    indices = PSD > max(PSD) * 0.3  # Find all freqs with large power
+                  dtype="int")
+    indices = PSD > max(PSD) * 0.3
     print("fff", indices)
-    PSDclean = PSD * indices  # Zero out all others
+    PSDclean = PSD * indices
     print('len', len(PSDclean))
     for i in range(len(freq[L])):
         if PSDclean[i] == max(PSDclean[L]):
@@ -109,16 +98,16 @@ def mostPowerfulFrequency(data1, samplerate1):
     data, samplerate = data1, samplerate1
     length = len(data) / samplerate
     time = np.linspace(0., length,
-                       len(data))  # list the size of samplesize with 1 sample-time length per iteration
-    f = data  # Signal
-    dt = time[4] - time[3]  ##Iteration length variable
-    n = len(time)  ##Amount of samples
-    fhat = np.fft.fft(f, n)  ### Fourier transformed signal
-    PSD = fhat * np.conj(fhat) / n  ## Computing power spectrum of the signal
-    freq = (1 / (dt * n) * np.arange(n))  ## Making freqeuncies for x-axis
+                       len(data))
+    f = data
+    dt = time[4] - time[3]
+    n = len(time)
+    fhat = np.fft.fft(f, n)
+    PSD = fhat * np.conj(fhat) / n
+    freq = (1 / (dt * n) * np.arange(n))
     L = np.arange(1, np.floor(n / 2),
-                  dtype="int")  ## Only plot the first half of freqs, this seperates the second half
-    indices = PSD > max(PSD) * 0.6  # Find all freqs with large power
+                  dtype="int")
+    indices = PSD > max(PSD) * 0.6
     print(indices == True)
     PSDclean = PSD * indices  # Zero out all others
     print('maxv', max(PSDclean[:1000]))
@@ -144,93 +133,3 @@ if __name__ == "__main__":
 
     mostPowerfulFrequency(datacut, samplerate)
 
-    # wav_fname = "detteerentest.wav"
-    # data, samplerate = lbs.load(wav_fname)
-    #
-    # print(f'Samplerate = {samplerate}')
-    #
-    # length = data.shape[0] / samplerate
-    # print(f"length = {length}s")
-    # g = data
-    # time = np.linspace(0., length, data.shape[0])  # list the size of samplesize with 1 sample-time length per iteration
-    # f = data  # Signal
-    # dt = time[4] - time[3]  ##Iteration length variable
-    # n = len(time)  ##Amount of samples
-    # fhat = np.fft.fft(f, n)  ### Fourier transformed signal
-    # PSD = fhat * np.conj(fhat) / n  ## Computing power spectrum of the signal
-    # freq = (1 / (dt * n) * np.arange(n))  ## Making freqeuncies for x-axis
-    # L = np.arange(1, np.floor(n / 2), dtype="int")  ## Only plot the first half of freqs, this seperates the second hal
-    # indices = PSD > max(PSD) * 0.3  # Find all freqs with large power
-    # PSDclean = PSD * indices  # Zero out all others
-    # fhat = indices * fhat  # Zero out small Fourier coeffs. in Y
-    # ffilt = np.fft.ifft(fhat)  # inverse fourier to receive denoised signal
-    # absFfilt = ffilt.real  # Only return real numbers as write() function cant write complex numbers
-    #
-    # write("dillerinumsen.wav", 22050, absFfilt)
-    # noise, sampleratenoise = lbs.load("onlynoise.wav")
-    # yoyo = abs(absFfilt)
-    #
-    # noiseArr = np.zeros_like(f)
-    # for i in range(len(noise)):
-    #     noiseArr[i] = noise[i]
-    # test2 = f - noiseArr
-    #
-    # write("wieneren.wav", 22050, test2)
-    # test = f - yoyo
-    # write("watisthis.wav", 22050, test)
-    # for i in range(len(freq[L])):
-    #     if PSDclean[i] == max(PSDclean[L]):
-    #         print("--------------------------------------------------")
-    #         print("Most powerful frequency in the power spectrum:", freq[i])
-    #         break
-    #
-    # fig, axis = plt.subplots(3, 1)
-    # plt.sca(axis[0])
-    # plt.plot(time, f, color='c', LineWidth=1.5, label="Sample")
-    # plt.xlim(time[0], time[-1])
-    # plt.ylabel("Amplitude [?]")
-    # plt.xlabel("Seconds [s]")
-    # plt.legend()
-    #
-    # plt.sca(axis[1])
-    # plt.plot(time, ffilt, color="royalblue", label="Filtered")
-    # plt.xlim(time[0], time[-1])
-    # plt.ylabel("Amplitude [?]")
-    # plt.xlabel("Seconds [s]")
-    # plt.legend()
-    #
-    # plt.sca(axis[2])
-    # plt.plot(time, test2, color="mediumslateblue", label="Sample - Filtered")
-    # plt.xlim(time[0], time[-1])
-    # plt.ylabel("Amplitude [?]")
-    # plt.xlabel("Seconds [s]")
-    # plt.legend()
-    # plt.show()
-    #
-    # # plt.sca(axis[0])
-    # plt.plot(freq[L], PSD[L], color="r", LineWidth=2, label="Noisy")
-    # # plt.plot(freq[L], PSDclean[L], color="c", LineWidth=2, label="Filtered")
-    # plt.xlim(freq[L[0]], 1000)
-    # plt.ylabel("Power")
-    # plt.xlabel("Frequency [Hz]")
-    # plt.legend()
-    # plt.show()
-    #
-    # # plt.plot(freq[L], PSD[L], color="r", LineWidth=2, label="Noisy")
-    # plt.plot(freq[L], PSDclean[L], color="c", LineWidth=2, label="Filtered")
-    # plt.xlim(freq[L[0]], 1000)
-    # plt.ylabel("Power")
-    # plt.xlabel("Frequency [Hz]")
-    # plt.legend()
-    # plt.show()
-    #
-    # write("yyyyxu.wav", 22050, absFfilt)
-    # print("--------------------------------------------------")
-    # print("Mean frequency:", np.mean(abs(absFfilt)) * 10000)
-    # print("Median frequency:", np.median(abs(absFfilt)) * 10000)
-    # print("Maximum frequency:", np.max(abs(absFfilt)) * 10000)
-    # print("Minimum frequency:", np.min(abs(absFfilt)) * 10000)
-    #
-    #
-    #
-    # getFreqDistribution(absFfilt)

@@ -1,12 +1,6 @@
-# import
 from MED4Exam.evaluation import Evaluation
 from MED4Exam.FeatureExtraction import FeatureExtraction
-from MED4Exam.FeatureSpace import FeatureSpace
-from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay, accuracy_score, precision_score, recall_score, \
-    f1_score
-import matplotlib.pyplot as plt
-import pandas as pd
-import seaborn as sn
+from sklearn.metrics import confusion_matrix, accuracy_score
 import numpy as np
 
 
@@ -29,33 +23,7 @@ def GetMeanAccuracy(iterations, emotions, methods):
         print("Accuracy: " + str(accuracy[i]))
         print("Confusion Matrix:")
         print(confusion_matrix(conMatrix[0], conMatrix[1]))
-
-        """unique_numbers = list(set(conMatrix[x][0]))
-        emotionStr = emotions[int(unique_numbers[0])]
-        for i in range(1, len(unique_numbers)):
-            emotionStr += " " + str(emotions[int(unique_numbers[i])])
-            
-        print(emotionStr)"""
         print()
-
-    """indexArr = emotions
-    indexArr.append("None")
-
-    df_cm = pd.DataFrame(confusion_matrix(x, y, normalize='true'), index=[e for e in indexArr], columns=[e for e in indexArr])
-
-    sn.set(font_scale=1.4)  # for label size
-    sn.heatmap(df_cm, annot=True, annot_kws={"size": 16}, cmap=plt.cm.Blues)  # font size
-    plt.yticks( va='center')
-
-    print("Confusion Matrix:")
-    print(confusion_matrix(x, y))
-    print("Accuracy: " + str(accuracy_score(x, y)))
-
-    cm = confusion_matrix(x,y)
-
-    cm = np.delete(cm,len(cm)-1,0)
-    print(cm)
-    plt.show()"""
 
     return x, y
 

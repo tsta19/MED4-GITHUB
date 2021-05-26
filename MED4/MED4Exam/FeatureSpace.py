@@ -12,11 +12,9 @@ class FeatureSpace:
     def setMethods(self, methods):
         self.methods = methods
 
-
     def setEmotions(self, emotions):
         self.emotions = emotions
         self.resetMoodScores()
-
 
     def setFeatureSpaces(self):
         print("Getting imput from list")
@@ -94,10 +92,8 @@ class FeatureSpace:
         relation = self.zeroDivision((mean + self.getDistance(measurementsArrayValue, mean)), (mean + std))
         return relation
 
-
     def zeroDivision(self, n, d):
         return n / d if d > 0 and n > 0 else 10000
-
 
     def checkPitch(self, measurementsArray):
         self.p = []
@@ -112,7 +108,6 @@ class FeatureSpace:
 
         mostProbableMood = [min(self.p), self.p.index(min(self.p))]
         return mostProbableMood
-
 
     def checkPitchVariance(self, measurementsArray):
         index = 2 + self.minusCounter

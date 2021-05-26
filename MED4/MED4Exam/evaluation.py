@@ -33,34 +33,6 @@ class Evaluation():
 
         return emotionArr
 
-    def cut_off_array(self, emotionArr):
-        emotionArr = np.array(emotionArr)
-
-        for x in range(len(emotionArr[0])):
-            q15, q85 = np.percentile(emotionArr[:,x], 25), np.percentile(emotionArr[:,x], 75)
-            iqr = q85 - q15
-            cut_off = iqr * 1.5
-            lower, upper = q15 - cut_off, q85 + cut_off
-
-            data_mean, data_std = np.mean(emotionArr[:,x]), np.std(emotionArr[:,x])
-            print("data mean: " + str(data_mean))
-            print("data std: " + str(data_std))
-            cut_off = data_std*3
-            lower, upper = data_mean - cut_off, data_mean + cut_off
-
-            outliers_removed = []
-            for i in range(len(emotionArr)):
-                if emotionArr[i][x] > lower and emotionArr[i][x] < upper:
-                    if len(outliers_removed) < 1:
-                        outliers_removed = emotionArr[i]
-                    else:
-                        outliers_removed = np.vstack((outliers_removed, emotionArr[i]))
-            emotionArr = outliers_removed
-            print(emotionArr)
-
-        emotionArr = np.array(emotionArr)
-        return emotionArr
-
     def makeDatasetFromText(self, emotions):
         self.featuresX = np.array([])
         self.featuresY = np.array([])
@@ -86,7 +58,6 @@ class Evaluation():
 
         print()
         print("dataset made")
-
 
     def makeDatasetFromSound(self, emotions, noiseRange, voiceRange, chunkRange):
         self.featuresX = np.array([])
